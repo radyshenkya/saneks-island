@@ -5,8 +5,8 @@
 Вы играете за этого Санька. Игра в жанре Survival. Вам придется добывать ресурсы, сражаться с монстрами этого острова, отстраивать свою базу, и в итоге сбежать.
 
 ## Наша команда
-**Артем Соколов** - [VK](https://vk.com/prgyl)
-**Родион Сарыгин** - [VK](https://vk.com/radyshenkya)
+* **Артем Соколов** - [VK](https://vk.com/prgyl)  
+* **Родион Сарыгин** - [VK](https://vk.com/radyshenkya)
 
 ## ТЗ
 [Google Docs - Sanek's Island ТЗ](https://docs.google.com/document/d/1w_fBK8nmMP8rSYfH01XECaUuhq5JwP1by4vZuIcGSjE/edit?usp=sharing)

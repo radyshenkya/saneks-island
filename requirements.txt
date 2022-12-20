@@ -1,0 +1,3 @@
+perlin==0.0.2
+pygame==2.1.2
+pygame-entities @ git+https://github.com/radyshenkya/pygame_entities@master

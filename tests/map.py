@@ -11,7 +11,7 @@ sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 
 if True:
     from assets import Sprites, SPRITE_SIZE
-    from entities.map import Map, SandTile
+    from entities.map import Map, SandTile, fill_map
 
 RESOLUTION = (800, 640)
 FRAMERATE = 60
@@ -57,9 +57,11 @@ def main() -> None:
     game = Game.get_instance(RESOLUTION, FRAMERATE, VOID_COLOR)
     game.subsribe_for_event(on_quit_event, pygame.QUIT)
 
-    # Создаем карту размерами 100x100 тайлов, с чанками 10x10,
-    # Она долго генерируется
+    # Создаем карту размерами 100x100 тайлов, с чанками 10x10
     tile_map = Map(Vector2(), (10, 10), (10, 10), SandTile)
+
+    # Генерируем карту
+    fill_map(tile_map, 1)
 
     player = TestPlayer(Vector2(100, 100), SpriteWithCameraOffset(
         Sprites.PLAYER_FRONT_1, 0))

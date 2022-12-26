@@ -2,15 +2,17 @@ from typing import List
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2, clamp
 
+from entities.map import Map
+
 
 class LivingEntity(Entity):
     """
     Живая сущность. У нее есть здоровье (HP), которое можно изменять. Так же она может умереть, если HP будут равны 0.
     """
 
-    def __init__(self, position: Vector2, max_hp: int) -> None:
+    def __init__(self, position: Vector2, max_hp: int, map: Map) -> None:
         super().__init__(position)
-
+        self.map = map
         self.max_hp = max_hp
         self.hp = max_hp
 

@@ -158,7 +158,7 @@ class Map(Entity):
     """
     Сущность тайловой карты.
     """
-    RENDER_RADIUS = 5000
+    RENDER_RADIUS = 3500
 
     def __init__(self, position: Vector2, chunk_size: Tuple[int, int], map_size: Tuple[int, int], default_tile: Tile) -> None:
         super().__init__(position)

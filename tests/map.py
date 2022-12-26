@@ -13,7 +13,7 @@ if True:
     from assets import Sprites, SPRITE_SIZE
     from entities.map import Map, SandTile, fill_map
 
-RESOLUTION = (800, 640)
+RESOLUTION = (0, 0)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
 

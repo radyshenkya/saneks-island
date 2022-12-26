@@ -14,4 +14,4 @@ class OnMapSpriteMixin(SpriteMixin):
         self.subscribe_on_update(self.set_level_by_y_pos)
 
     def set_level_by_y_pos(self, _):
-        self.sprite.layer = self.position
+        self.sprite.layer = self.position.y

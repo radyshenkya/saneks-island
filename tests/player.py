@@ -1,7 +1,3 @@
-from pygame_entities.utils.math import Vector2
-from pygame_entities.utils.drawable import BaseSprite, SpriteWithCameraOffset
-from pygame_entities.game import Game
-from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
 import pygame
 from inspect import getsourcefile
 import os.path as path
@@ -10,6 +6,10 @@ current_dir = path.dirname(path.abspath(getsourcefile(lambda: 0)))
 sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 
 if True:
+    from pygame_entities.utils.math import Vector2
+    from pygame_entities.utils.drawable import BaseSprite, SpriteWithCameraOffset
+    from pygame_entities.game import Game
+    from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
     from entities.player import Player

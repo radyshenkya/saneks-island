@@ -60,7 +60,7 @@ class Sprites:
     STONE_WITH_IRON = SPRITESHEET.image_at((3, 2))
     STONE_WITH_IRON_2 = SPRITESHEET.image_at((4, 2))
 
-    STONE = SPRITESHEET.image_at((5, 2))
+    ROCK = SPRITESHEET.image_at((5, 2))
     GOLD_INGOT = SPRITESHEET.image_at((6, 2))
     IRON_INGOT = SPRITESHEET.image_at((7, 2))
     COAL = SPRITESHEET.image_at((2, 3))

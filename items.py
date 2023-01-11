@@ -4,6 +4,8 @@ from assets import Sprites
 
 
 class Item:
+    NAME = "BaseItemClass"
+
     def __init__(self, amount: int) -> None:
         self.amount = amount
 
@@ -37,8 +39,8 @@ class PlaceableItem(Item):
 
 
 class Inventory:
-    def __init__(self) -> None:
-        self.slots = 10
+    def __init__(self, slots_count: int = 10) -> None:
+        self.slots = slots_count
         self.grid = [None for _ in range(self.slots)]
 
     def save(self):
@@ -53,7 +55,7 @@ class Inventory:
         except Exception:
             return Inventory()
 
-    def add_item(self, item) -> Item:
+    def add_item(self, item: Item) -> Item:
         """
         Добавляет предмет в инвентарь. Возвращает None,
         если поместилось все количество,
@@ -75,13 +77,13 @@ class Inventory:
                 return None
         return item
 
-    def set_slot(self, item, index):
+    def set_slot(self, item: Item, index: int):
         self.grid[index] = item
 
-    def get_slot(self, index):
+    def get_slot(self, index: int) -> Item:
         return self.grid[index]
 
-    def swap_slot(self, slot_index, item):
+    def swap_slot(self, slot_index: int, item: Item) -> Item | None:
         previous_item = self.grid[slot_index]
         self.grid[slot_index] = item
         return previous_item
@@ -90,13 +92,13 @@ class Inventory:
 class Wood(Item):
     NAME = 'Wood'
     MAX_AMOUNT = 10
-    IMAGE = 'WOOD'
+    IMAGE = Sprites.WOOD
 
 
 class Leaves(Item):
     NAME = 'Leaves'
     MAX_AMOUNT = 10
-    IMAGE = 'LEAVES'
+    IMAGE = Sprites.LEAVES
 
 
 class Rock(Item):
@@ -108,67 +110,67 @@ class Rock(Item):
 class Coal(Item):
     NAME = 'Coal'
     MAX_AMOUNT = 10
-    IMAGE = 'COAL'
+    IMAGE = Sprites.COAL
 
 
 class Iron(Item):
     NAME = 'Iron'
     MAX_AMOUNT = 10
-    IMAGE = 'IRON'
+    IMAGE = Sprites.IRON
 
 
 class Gold(Item):
     NAME = 'Gold'
     MAX_AMOUNT = 10
-    IMAGE = 'GOLD'
+    IMAGE = Sprites.GOLD
 
 
 class IronIngot(Item):
     NAME = 'Iron Ingot'
     MAX_AMOUNT = 10
-    IMAGE = 'IRON_INGOT'
+    IMAGE = Sprites.IRON_INGOT
 
 
 class GoldIngot(Item):
     NAME = 'Gold Ingot'
     MAX_AMOUNT = 10
-    IMAGE = 'GOLD_INGOT'
+    IMAGE = Sprites.GOLD_INGOT
 
 
 class Amethyst(Item):
     NAME = 'Amethyst'
     MAX_AMOUNT = 10
-    IMAGE = 'AMETHYST'
+    IMAGE = Sprites.AMETHYST
 
 
 class Feather(Item):
     NAME = 'Feather'
     MAX_AMOUNT = 10
-    IMAGE = 'FEATHER'
+    IMAGE = Sprites.BAG  # TODO: add feather image
 
 
 class String(Item):
     NAME = 'String'
     MAX_AMOUNT = 10
-    IMAGE = 'STRING'
+    IMAGE = Sprites.STRING
 
 
 class Arrow(Item):
     NAME = 'Arrow'
     MAX_AMOUNT = 10
-    IMAGE = 'ARROW'
+    IMAGE = Sprites.ARROW
 
 
 class RawMeat(ConsumableItem):
     NAME = 'Raw Meat'
     MAX_AMOUNT = 10
-    IMAGE = 'RAW_MEAT'
+    IMAGE = Sprites.RAW_MEAT
 
 
 class CookedMeat(ConsumableItem):
     NAME = 'Cooked Meat'
     MAX_AMOUNT = 10
-    IMAGE = 'COOKED_MEAT'
+    IMAGE = Sprites.COOKED_MEAT
 
 
 class WoodenSword(UsableItem):

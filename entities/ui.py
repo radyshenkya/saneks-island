@@ -66,3 +66,19 @@ class Button(SpriteMixin):
                 self._rbm_callback()
 
 
+class Popup(SpriteMixin):
+    def __init__(self, position: Vector2, text: str, font: pygame.font.Font, delete_seconds=5, color: Tuple[int, int, int] = (255, 255, 255)) -> None:
+        super().__init__(position)
+        self.sprite_init(FontSprite(text, color, font, UI_LAYER))
+        self.delete_second = delete_seconds
+        self.timer = 0
+
+        self.subscribe_on_update(self.on_update)
+
+    def on_update(self, delta):
+        self.timer += delta
+
+        self.position -= Vector2(0, 1)
+
+        if self.delete_second <= self.timer:
+            self.destroy()

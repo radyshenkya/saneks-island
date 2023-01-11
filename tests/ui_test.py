@@ -13,7 +13,7 @@ if True:
     from assets import Sprites, FONT_PATH
     from entities.map import Map, SandTile, fill_map
     from entities.player import Player
-    from entities.ui import Button
+    from entities.ui import Button, Popup
 
 RESOLUTION = (0, 0)
 FRAMERATE = 60
@@ -38,13 +38,17 @@ def main() -> None:
     player = Player(Vector2(100, 100), tile_map)
 
     # Добавляем кнопку
+    popup_font = pygame.font.Font(FONT_PATH, 20)
+
     def on_lbm_click():
-        print("Кнопка нажата")
+        Popup(Vector2.from_tuple(pygame.mouse.get_pos()),
+              "ЛКМ Нажата.", popup_font)
 
     def on_rbm_click():
-        print("Другая кнопка нажата")
+        Popup(Vector2.from_tuple(pygame.mouse.get_pos()),
+              "ПКМ Нажата.", popup_font, 1)
 
-    Button(Vector2(100, 100), "hello rudolf", pygame.font.Font(
+    Button(Vector2(100, 100), "тестовая кнопка", pygame.font.Font(
         FONT_PATH, 40), on_lbm_click, on_rbm_click)
 
     game.camera_follow_entity(player)

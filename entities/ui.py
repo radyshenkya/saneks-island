@@ -76,14 +76,13 @@ class InputField(Button):
                  placeholder_text: str = "",
                  color: Tuple[int, int, int] = (255, 255, 255),
                  color_on_hover: Tuple[int, int, int] = (150, 150, 150),
-                 placeholder_color: Tuple[int, int, int] = (100, 100, 100),
                  active_color: Tuple[int, int, int] = (200, 200, 200)) -> None:
         super().__init__(position, text, font, self.on_click,
                          self.on_click, color, color_on_hover)
 
         self.text_color = color
         self.placeholder_text = placeholder_text
-        self.placeholder_color = placeholder_color
+        self.placeholder_color = color_on_hover
         self.active_color = active_color
         self.max_length = max_length
         self.is_focused = False
@@ -128,9 +127,11 @@ class InputField(Button):
         if len(self.text) == 0:
             self._color_on_hover = self.placeholder_color
             self.sprite.set_text(self.placeholder_text, self.placeholder_color)
-            return
+        else:
+            self.sprite.set_text(self.text, self._color)
 
-        self.sprite.set_text(self.text, self._color)
+        self.collider_rect = pygame.Rect(
+            self.position.x, self.position.y, self.sprite.image.get_width(), self.sprite.image.get_height())
 
 
 class Popup(SpriteMixin):

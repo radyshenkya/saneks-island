@@ -9,9 +9,6 @@ class Item:
     def __init__(self, amount: int) -> None:
         self.amount = amount
 
-    def get_sprite(self):
-        return Sprites[self.image].value
-
 
 class UsableItem(Item):
     def __init__(self, amount: int, durability: float) -> None:

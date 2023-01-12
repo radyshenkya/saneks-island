@@ -1,3 +1,11 @@
+"""
+Тест игрока и предметов
+
+Можно подбирать предметы на клавишу F
+
+Так же можно убить игрока на клавишу K (из него выпадут все реси)
+"""
+from random import choice
 import pygame
 from inspect import getsourcefile
 import os.path as path
@@ -16,7 +24,7 @@ if True:
     from entities.item import ItemEntity
     from items import Wood, Iron, GoldIngot
 
-RESOLUTION = (800, 800)
+RESOLUTION = (0, 0)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
 
@@ -51,7 +59,8 @@ def main() -> None:
     # генерируем айтемсы
     for x in range(10):
         for y in range(10):
-            ItemEntity(Vector2(x * 100, y * 100), Wood(1))
+            ItemEntity(Vector2(x * 128, y * 128),
+                       choice([Wood, Iron, GoldIngot])(1))
 
     game.camera_follow_entity(player)
 

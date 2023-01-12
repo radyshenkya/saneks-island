@@ -4,7 +4,7 @@ from typing import Tuple
 import pygame
 from pygame_entities.entities.mixins import SpriteMixin
 from pygame_entities.utils.math import Vector2
-from pygame_entities.utils.drawable import FontSprite
+from pygame_entities.utils.drawable import FontSprite, FontSpriteWithCameraOffset
 
 
 UI_LAYER = 100000
@@ -135,9 +135,13 @@ class InputField(Button):
 
 
 class Popup(SpriteMixin):
-    def __init__(self, position: Vector2, text: str, font: pygame.font.Font, delete_seconds=5, color: Tuple[int, int, int] = (255, 255, 255)) -> None:
+    def __init__(self, position: Vector2, text: str, font: pygame.font.Font, is_screen_position=True, delete_seconds=5, color: Tuple[int, int, int] = (255, 255, 255)) -> None:
         super().__init__(position)
-        self.sprite_init(FontSprite(text, color, font, UI_LAYER))
+        if is_screen_position:
+            self.sprite_init(FontSprite(text, color, font, UI_LAYER))
+        else:
+            self.sprite_init(FontSpriteWithCameraOffset(
+                text, color, font, UI_LAYER))
         self.delete_second = delete_seconds
         self.timer = 0
 

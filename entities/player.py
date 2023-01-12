@@ -5,6 +5,7 @@ from entities.living_entities import LivingEntity
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
 from assets import Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
+from items import Inventory
 
 from pygame_entities.utils.drawable import AnimatedSpriteWithCameraOffset
 from pygame_entities.utils.math import Vector2
@@ -31,6 +32,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
     DEFAULT_HP = 10
 
+    INVENTORY_SLOTS_COUNT = 10
+
     def __init__(self, position: Vector2, tile_map: Map) -> None:
         super().__init__(position, self.DEFAULT_HP, tile_map)
         self.set_speed(self.DEFAULT_SPEED)
@@ -39,6 +42,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             self.FRONT_IDLE_ANIM, 0.2), Vector2())
 
         self.last_animation = self.FRONT_IDLE_ANIM
+
+        self.inventory = Inventory(slots_count=self.INVENTORY_SLOTS_COUNT)
 
         self.collision_init(self.COLLIDER_SIZE)
         self.velocity_init(False, 0.1)

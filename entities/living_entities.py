@@ -1,4 +1,5 @@
 from typing import List
+from items import Item
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2, clamp
 
@@ -34,10 +35,9 @@ class LivingEntity(Entity):
         self.add_hp(amount)
         self.hp = clamp(self.hp, 0, self.max_hp)
 
-    def get_loot(self) -> List:
+    def get_loot(self) -> List[Item]:
         """
-        тут будет генерироваться и возвращаться список предметов, которые должны выпасть из этой сущности при смерти,
-        но т.к. пока что айтемов нет, он бесполезен.
+        тут будет генерироваться и возвращаться список предметов, которые должны выпасть из этой сущности при смерти.
         """
         pass
 

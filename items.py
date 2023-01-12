@@ -5,12 +5,10 @@ from assets import Sprites
 
 class Item:
     NAME = "BaseItemClass"
+    IMAGE = Sprites.BAG
 
     def __init__(self, amount: int) -> None:
         self.amount = amount
-
-    def get_sprite(self):
-        return Sprites[self.image].value
 
 
 class UsableItem(Item):
@@ -146,7 +144,7 @@ class Amethyst(Item):
 class Feather(Item):
     NAME = 'Feather'
     MAX_AMOUNT = 10
-    IMAGE = Sprites.BAG  # TODO: add feather image
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class String(Item):
@@ -158,19 +156,19 @@ class String(Item):
 class Arrow(Item):
     NAME = 'Arrow'
     MAX_AMOUNT = 10
-    IMAGE = Sprites.ARROW
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class RawMeat(ConsumableItem):
     NAME = 'Raw Meat'
     MAX_AMOUNT = 10
-    IMAGE = Sprites.RAW_MEAT
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class CookedMeat(ConsumableItem):
     NAME = 'Cooked Meat'
     MAX_AMOUNT = 10
-    IMAGE = Sprites.COOKED_MEAT
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class WoodenSword(UsableItem):

@@ -1,4 +1,6 @@
+from random import randint
 from typing import List
+from entities.item import ItemEntity
 from items import Item
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2, clamp
@@ -47,4 +49,7 @@ class LivingEntity(Entity):
         По дефолту тут будут дропаться предметы из сущности, а сама сущность будет удаляться.
         Но пока что предметов нет, как и нормального функционала у этой функции :)
         """
+        # спавним лутеций жестк
+        for item in self.get_loot():
+            ItemEntity(self.position + Vector2(randint(-128, 128)), item)
         self.destroy()

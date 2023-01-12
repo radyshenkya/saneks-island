@@ -1,6 +1,7 @@
 """
 Тут хранится класс игрока, и все что с ним связано
 """
+from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
@@ -29,10 +30,10 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
     # В тайл/сек.
     DEFAULT_SPEED = 3
-
     DEFAULT_HP = 10
-
     INVENTORY_SLOTS_COUNT = 10
+
+    ITEMS_PICKUP_RADIUS = 128
 
     def __init__(self, position: Vector2, tile_map: Map) -> None:
         super().__init__(position, self.DEFAULT_HP, tile_map)
@@ -50,6 +51,7 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         self.subscribe_on_update(self.move_player)
         self.subscribe_on_update(self.animate)
+        self.game.subsribe_for_event(self.keys_handler, pygame.KEYDOWN)
 
     def move_player(self, delta_time: float):
         keys = pygame.key.get_pressed()
@@ -66,6 +68,20 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             direction.y += 1
 
         self.velocity = direction.normalized() * self.speed * delta_time
+
+    def keys_handler(self, event: pygame.event.Event):
+        if event.key == pygame.K_f:
+            self.pickup_nearest_items()
+
+    def pickup_nearest_items(self):
+        for ent in self.game.enabled_entities:
+
+            print(type(ent) == ItemEntity)
+            if not type(ent) == ItemEntity or (ent.position - self.position).magnitude() > self.ITEMS_PICKUP_RADIUS:
+                continue
+
+            ent: ItemEntity
+            ent.item = self.inventory.add_item(ent.item)
 
     def animate(self, delta_time: float):
         if self.velocity.x > 0:

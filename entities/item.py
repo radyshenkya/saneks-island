@@ -23,7 +23,7 @@ class ItemEntity(OnMapSpriteMixin):
     def item(self, new_value: Item | None):
         if new_value is None:
             self.destroy()
-            Popup(self.position, f"{self._item.NAME} удален!",
-                  pygame.font.Font(FONT_PATH, 20), False)
+            Popup(self.position, f"{self._item.NAME}",
+                  pygame.font.Font(FONT_PATH, 25), False, 2)
 
         self._item = Item

@@ -25,7 +25,10 @@ class LivingEntity(Entity):
 
         Если после добавления `amount` здоровье стало меньше или равно нулю, то вызывается метод `on_die()`
         """
-        self.hp = self.hp + amount
+        self.set_hp(self.hp + amount)
+
+    def set_hp(self, amount: int):
+        self.hp = amount
 
         if self.hp <= 0:
             self.on_die()
@@ -51,5 +54,6 @@ class LivingEntity(Entity):
         """
         # спавним лутеций жестк
         for item in self.get_loot():
-            ItemEntity(self.position + Vector2(randint(-128, 128)), item)
+            ItemEntity(self.position + Vector2(randint(-128, 128),
+                       randint(-128, 128)), item)
         self.destroy()

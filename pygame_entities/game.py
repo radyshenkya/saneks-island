@@ -98,7 +98,7 @@ class Game:
         """
         List of enabled entities
         """
-        return self._enabled_entities.values()
+        return list(self._enabled_entities.values())
 
     @property
     def disabled_entities(self) -> List["Entity"]:

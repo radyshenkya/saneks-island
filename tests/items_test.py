@@ -16,7 +16,7 @@ if True:
     from entities.item import ItemEntity
     from items import Wood, Iron, GoldIngot
 
-RESOLUTION = (0, 0)
+RESOLUTION = (800, 800)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
 
@@ -39,6 +39,14 @@ def main() -> None:
     fill_map(tile_map, 1)
 
     player = Player(Vector2(100, 100), tile_map)
+
+    # тест для убыйства игрока
+    def kill_player(event):
+        if event.key == pygame.K_k:
+            game.camera_follow_entity(None)
+            player.set_hp(0)
+
+    game.subsribe_for_event(kill_player, pygame.KEYDOWN)
 
     # генерируем айтемсы
     for x in range(10):

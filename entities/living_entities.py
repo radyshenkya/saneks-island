@@ -1,4 +1,7 @@
+from random import randint
 from typing import List
+from entities.item import ItemEntity
+from items import Item
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2, clamp
 
@@ -22,7 +25,10 @@ class LivingEntity(Entity):
 
         Если после добавления `amount` здоровье стало меньше или равно нулю, то вызывается метод `on_die()`
         """
-        self.hp = self.hp + amount
+        self.set_hp(self.hp + amount)
+
+    def set_hp(self, amount: int):
+        self.hp = amount
 
         if self.hp <= 0:
             self.on_die()
@@ -34,10 +40,9 @@ class LivingEntity(Entity):
         self.add_hp(amount)
         self.hp = clamp(self.hp, 0, self.max_hp)
 
-    def get_loot(self) -> List:
+    def get_loot(self) -> List[Item]:
         """
-        тут будет генерироваться и возвращаться список предметов, которые должны выпасть из этой сущности при смерти,
-        но т.к. пока что айтемов нет, он бесполезен.
+        тут будет генерироваться и возвращаться список предметов, которые должны выпасть из этой сущности при смерти.
         """
         pass
 
@@ -47,4 +52,8 @@ class LivingEntity(Entity):
         По дефолту тут будут дропаться предметы из сущности, а сама сущность будет удаляться.
         Но пока что предметов нет, как и нормального функционала у этой функции :)
         """
+        # спавним лутеций жестк
+        for item in self.get_loot():
+            ItemEntity(self.position + Vector2(randint(-128, 128),
+                       randint(-128, 128)), item)
         self.destroy()

@@ -1,10 +1,11 @@
 import pickle
-import os
 from assets import Sprites
 
 
 class Item:
     NAME = "BaseItemClass"
+    IMAGE = Sprites.BAG
+    MAX_AMOUNT = 10
 
     def __init__(self, amount: int) -> None:
         self.amount = amount
@@ -58,21 +59,22 @@ class Inventory:
         если поместилось все количество,
         иначе возвращает оставшиеся предметы.
         """
-        for elem, index in zip(self.grid, range(len(self.grid))):
-            if elem is None:
-                self.grid[index] = item
-                return None
-            if elem.NAME == item.NAME:
-                free_space = elem.MAX_AMOUNT - elem.amount
-                if item.amount <= free_space:
-                    elem.amount += item.amount
-                    return None
-                else:
-                    elem.amount = elem.MAX_AMOUNT
-                    item.amount -= free_space
-            if item.amount == 0:
-                return None
-        return item
+        for slot, item_in_inv in enumerate(self.grid):
+            if type(item) is type(item_in_inv):
+                fill_amount = min(item_in_inv.MAX_AMOUNT -
+                                  item_in_inv.amount, item.amount)
+                item_in_inv.amount += fill_amount
+                item.amount -= fill_amount
+
+                if item.amount <= 0:
+                    break
+            elif item_in_inv is None:
+                self.grid[slot] = item
+                break
+        else:
+            return item
+
+        return None
 
     def set_slot(self, item: Item, index: int):
         self.grid[index] = item
@@ -88,86 +90,72 @@ class Inventory:
 
 class Wood(Item):
     NAME = 'Wood'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.WOOD
 
 
 class Leaves(Item):
     NAME = 'Leaves'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.LEAVES
 
 
 class Rock(Item):
     NAME = 'Rock'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.ROCK
 
 
 class Coal(Item):
     NAME = 'Coal'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.COAL
 
 
 class Iron(Item):
     NAME = 'Iron'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.IRON
 
 
 class Gold(Item):
     NAME = 'Gold'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.GOLD
 
 
 class IronIngot(Item):
     NAME = 'Iron Ingot'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.IRON_INGOT
 
 
 class GoldIngot(Item):
     NAME = 'Gold Ingot'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.GOLD_INGOT
 
 
 class Amethyst(Item):
     NAME = 'Amethyst'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.AMETHYST
 
 
 class Feather(Item):
     NAME = 'Feather'
-    MAX_AMOUNT = 10
-    IMAGE = Sprites.BAG  # TODO: add feather image
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class String(Item):
     NAME = 'String'
-    MAX_AMOUNT = 10
     IMAGE = Sprites.STRING
 
 
 class Arrow(Item):
     NAME = 'Arrow'
-    MAX_AMOUNT = 10
-    IMAGE = Sprites.ARROW
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class RawMeat(ConsumableItem):
     NAME = 'Raw Meat'
-    MAX_AMOUNT = 10
-    IMAGE = Sprites.RAW_MEAT
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class CookedMeat(ConsumableItem):
     NAME = 'Cooked Meat'
-    MAX_AMOUNT = 10
-    IMAGE = Sprites.COOKED_MEAT
+    IMAGE = Sprites.BAG  # TODO: add image
 
 
 class WoodenSword(UsableItem):

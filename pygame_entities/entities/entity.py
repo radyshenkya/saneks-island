@@ -63,6 +63,9 @@ class Entity:
         """
         for method in self._on_destroy:
             method()
+
+        self._on_destroy = list()
+        self._on_update = list()
         self.game.delete_entity(self.id)
 
     def enable(self):

@@ -1,10 +1,13 @@
 """
 Тут хранится класс игрока, и все что с ним связано
 """
+from typing import List
+from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
 from assets import Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
+from items import Inventory, Item
 
 from pygame_entities.utils.drawable import AnimatedSpriteWithCameraOffset
 from pygame_entities.utils.math import Vector2
@@ -28,8 +31,10 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
     # В тайл/сек.
     DEFAULT_SPEED = 3
-
     DEFAULT_HP = 10
+    INVENTORY_SLOTS_COUNT = 10
+
+    ITEMS_PICKUP_RADIUS = 128
 
     def __init__(self, position: Vector2, tile_map: Map) -> None:
         super().__init__(position, self.DEFAULT_HP, tile_map)
@@ -40,11 +45,15 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         self.last_animation = self.FRONT_IDLE_ANIM
 
+        self.inventory: Inventory = Inventory(
+            slots_count=self.INVENTORY_SLOTS_COUNT)
+
         self.collision_init(self.COLLIDER_SIZE)
         self.velocity_init(False, 0.1)
 
         self.subscribe_on_update(self.move_player)
         self.subscribe_on_update(self.animate)
+        self.game.subsribe_for_event(self.keys_handler, pygame.KEYDOWN)
 
     def move_player(self, delta_time: float):
         keys = pygame.key.get_pressed()
@@ -62,6 +71,18 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         self.velocity = direction.normalized() * self.speed * delta_time
 
+    def keys_handler(self, event: pygame.event.Event):
+        if event.key == pygame.K_f:
+            self.pickup_nearest_items()
+
+    def pickup_nearest_items(self):
+        for ent in self.game.enabled_entities:
+            if not type(ent) == ItemEntity or (ent.position - self.position).magnitude() > self.ITEMS_PICKUP_RADIUS:
+                continue
+
+            ent: ItemEntity
+            ent.item = self.inventory.add_item(ent.item)
+
     def animate(self, delta_time: float):
         if self.velocity.x > 0:
             self.last_animation = self.LEFT_MOVE_ANIM
@@ -76,6 +97,9 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         if self.sprite.frames != self.last_animation:
             self.sprite.frames = self.last_animation
+
+    def get_loot(self) -> List[Item]:
+        return [item for item in self.inventory.grid if not item is None]
 
     def set_speed(self, tiles_in_second: float) -> None:
         self.speed = tiles_in_second * SPRITE_SIZE[0]

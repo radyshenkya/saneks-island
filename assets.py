@@ -78,6 +78,10 @@ class Sprites:
     MARK_SIGN = SPRITESHEET.image_at((6, 3))
     CROSS_SIGH = SPRITESHEET.image_at((7, 3))
 
+    WOOD = SPRITESHEET.image_at((6, 4))
+    LEAVES = SPRITESHEET.image_at((7, 4))
+    STRING = SPRITESHEET.image_at((8, 4))
+
     SKULL = SPRITESHEET.image_at((8, 2))
 
     FURNACE = SPRITESHEET.image_at((6, 1))

@@ -66,6 +66,73 @@ class Button(SpriteMixin):
                 self._rbm_callback()
 
 
+# TODO: он исчезает почему то когда в его начало наводишься, если текста нет, надо бы пофиксить, но чет сейчас леньы
+class InputField(Button):
+    def __init__(self,
+                 position: Vector2,
+                 text: str,
+                 font: pygame.font.Font,
+                 max_length: int = 20,
+                 placeholder_text: str = "",
+                 color: Tuple[int, int, int] = (255, 255, 255),
+                 color_on_hover: Tuple[int, int, int] = (150, 150, 150),
+                 placeholder_color: Tuple[int, int, int] = (100, 100, 100),
+                 active_color: Tuple[int, int, int] = (200, 200, 200)) -> None:
+        super().__init__(position, text, font, self.on_click,
+                         self.on_click, color, color_on_hover)
+
+        self.text_color = color
+        self.placeholder_text = placeholder_text
+        self.placeholder_color = placeholder_color
+        self.active_color = active_color
+        self.max_length = max_length
+        self.is_focused = False
+
+        self.game.subsribe_for_event(self.on_key_pressed, pygame.KEYDOWN)
+
+        self.text_update()
+
+    def on_click(self):
+        self.set_focus(True)
+
+    def on_key_pressed(self, event: pygame.event.Event):
+        if not self.is_focused:
+            return
+
+        elif event.key == pygame.K_RETURN or event.key == pygame.K_ESCAPE:
+            self.set_focus(False)
+            return
+
+        elif event.key == pygame.K_BACKSPACE:
+            if len(self.text) > 0:
+                self.text = self.text[:-1]
+                self.text_update()
+
+        elif len(self.text) < self.max_length:
+            self.text += event.unicode
+            self.text_update()
+
+    def set_focus(self, state: bool):
+        if not state:
+            self.is_focused = False
+            self._color = self.text_color
+            self.text_update()
+            return
+
+        self.is_focused = True
+        self._color = self.active_color
+
+        self.text_update()
+
+    def text_update(self):
+        if len(self.text) == 0:
+            self._color_on_hover = self.placeholder_color
+            self.sprite.set_text(self.placeholder_text, self.placeholder_color)
+            return
+
+        self.sprite.set_text(self.text, self._color)
+
+
 class Popup(SpriteMixin):
     def __init__(self, position: Vector2, text: str, font: pygame.font.Font, delete_seconds=5, color: Tuple[int, int, int] = (255, 255, 255)) -> None:
         super().__init__(position)

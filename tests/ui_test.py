@@ -13,7 +13,7 @@ if True:
     from assets import Sprites, FONT_PATH
     from entities.map import Map, SandTile, fill_map
     from entities.player import Player
-    from entities.ui import Button, Popup
+    from entities.ui import Button, Popup, InputField
 
 RESOLUTION = (0, 0)
 FRAMERATE = 60
@@ -48,8 +48,12 @@ def main() -> None:
         Popup(Vector2.from_tuple(pygame.mouse.get_pos()),
               "ПКМ Нажата.", popup_font, 1)
 
-    Button(Vector2(100, 100), "тестовая кнопка", pygame.font.Font(
-        FONT_PATH, 40), on_lbm_click, on_rbm_click)
+    normal_font = pygame.font.Font(FONT_PATH, 40)
+
+    Button(Vector2(100, 100), "тестовая кнопка",
+           normal_font, on_lbm_click, on_rbm_click)
+    InputField(Vector2(100, 300), "aboba",
+               normal_font, 20, "Place Holder Text")
 
     game.camera_follow_entity(player)
 

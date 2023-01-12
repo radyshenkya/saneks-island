@@ -4,10 +4,12 @@
 from typing import List
 from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
+from entities.ui import Button
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
-from assets import Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
+from assets import FONT_PATH, Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
 from items import Inventory, Item
+from pygame_entities.entities.entity import Entity
 
 from pygame_entities.utils.drawable import AnimatedSpriteWithCameraOffset
 from pygame_entities.utils.math import Vector2
@@ -51,6 +53,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         self.collision_init(self.COLLIDER_SIZE)
         self.velocity_init(False, 0.1)
 
+        self.inventory_panel = InventoryPanelUI(self.inventory)
+
         self.subscribe_on_update(self.move_player)
         self.subscribe_on_update(self.animate)
         self.game.subsribe_for_event(self.keys_handler, pygame.KEYDOWN)
@@ -83,6 +87,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             ent: ItemEntity
             ent.item = self.inventory.add_item(ent.item)
 
+        self.inventory_panel.render_panel()
+
     def animate(self, delta_time: float):
         if self.velocity.x > 0:
             self.last_animation = self.LEFT_MOVE_ANIM
@@ -104,3 +110,33 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
     def set_speed(self, tiles_in_second: float) -> None:
         self.speed = tiles_in_second * SPRITE_SIZE[0]
         print(self.speed)
+
+
+class InventoryPanelUI(Entity):
+    """
+    Рендерит панельку инвентаря
+    """
+    SCREEN_PANEL_OFFSET = Vector2(100, 100)
+
+    def __init__(self, inventory_ref: Inventory) -> None:
+        super().__init__(Vector2())
+
+        self.ui_elems = list()
+        self.inventory = inventory_ref
+
+    def render_panel(self):
+        [el.destroy() for el in self.ui_elems]
+        self.ui_elems = list()
+
+        font = pygame.font.Font(FONT_PATH, 40)
+
+        for i, item in enumerate(self.inventory.grid):
+            if item is None:
+                continue
+
+            item_btn = Button(self.SCREEN_PANEL_OFFSET +
+                              Vector2(0, i * 50), f"{item.NAME} x{item.amount}", font)
+            self.ui_elems.append(item_btn)
+
+    def hide_panel(self):
+        pass

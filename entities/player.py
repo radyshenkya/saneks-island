@@ -79,6 +79,15 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         if event.key == pygame.K_f:
             self.pickup_nearest_items()
 
+        if event.key == pygame.K_i:
+            self.toggle_inventory_panel()
+
+    def toggle_inventory_panel(self):
+        if self.inventory_panel.is_visible:
+            self.inventory_panel.hide()
+        else:
+            self.inventory_panel.render()
+
     def pickup_nearest_items(self):
         for ent in self.game.enabled_entities:
             if not type(ent) == ItemEntity or (ent.position - self.position).magnitude() > self.ITEMS_PICKUP_RADIUS:
@@ -87,7 +96,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             ent: ItemEntity
             ent.item = self.inventory.add_item(ent.item)
 
-        self.inventory_panel.render_panel()
+        if self.inventory_panel.is_visible:
+            self.inventory_panel.render()
 
     def animate(self, delta_time: float):
         if self.velocity.x > 0:
@@ -114,7 +124,7 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
 class InventoryPanelUI(Entity):
     """
-    Рендерит панельку инвентаря
+    UI панелька инвентаря
     """
     SCREEN_PANEL_OFFSET = Vector2(100, 100)
 
@@ -122,11 +132,13 @@ class InventoryPanelUI(Entity):
         super().__init__(Vector2())
 
         self.ui_elems = list()
+        self.is_visible = False
         self.inventory = inventory_ref
 
-    def render_panel(self):
-        [el.destroy() for el in self.ui_elems]
-        self.ui_elems = list()
+    def render(self):
+        self.hide()
+
+        self.is_visible = True
 
         font = pygame.font.Font(FONT_PATH, 40)
 
@@ -138,5 +150,8 @@ class InventoryPanelUI(Entity):
                               Vector2(0, i * 50), f"{item.NAME} x{item.amount}", font)
             self.ui_elems.append(item_btn)
 
-    def hide_panel(self):
-        pass
+    def hide(self):
+        [el.destroy() for el in self.ui_elems]
+        self.ui_elems = list()
+
+        self.is_visible = False

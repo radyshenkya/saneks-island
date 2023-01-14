@@ -1,10 +1,11 @@
 """
 Тут хранится класс игрока, и все что с ним связано
 """
+from functools import partial
 from typing import List
 from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
-from entities.ui import Button
+from entities.ui import Button, UIElementsContainer, ActionsPanel
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
 from assets import FONT_PATH, Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
@@ -53,11 +54,11 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         self.collision_init(self.COLLIDER_SIZE)
         self.velocity_init(False, 0.1)
 
-        self.inventory_panel = InventoryPanelUI(self.inventory)
+        self.inventory_panel = InventoryPanelUI(self)
 
         self.subscribe_on_update(self.move_player)
         self.subscribe_on_update(self.animate)
-        self.game.subsribe_for_event(self.keys_handler, pygame.KEYDOWN)
+        self.subscribe_for_event(self.keys_handler, pygame.KEYDOWN)
 
     def move_player(self, delta_time: float):
         keys = pygame.key.get_pressed()
@@ -114,6 +115,15 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         if self.sprite.frames != self.last_animation:
             self.sprite.frames = self.last_animation
 
+    def drop_item_from_inventory(self, slot_index: int):
+        if self.inventory.get_slot(slot_index) is None:
+            return
+
+        ItemEntity(self.position, self.inventory.swap_slot(slot_index, None))
+
+        if self.inventory_panel.is_visible:
+            self.inventory_panel.render()
+
     def get_loot(self) -> List[Item]:
         return [item for item in self.inventory.grid if not item is None]
 
@@ -122,36 +132,54 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         print(self.speed)
 
 
-class InventoryPanelUI(Entity):
+# за такую реализацию убить мало, но как бы другие фичи проекта до 19 сами себя не сделают, поэтому как то так
+class InventoryPanelUI(UIElementsContainer):
     """
     UI панелька инвентаря
     """
-    SCREEN_PANEL_OFFSET = Vector2(100, 100)
+    SCREEN_PANEL_OFFSET = Vector2(50, 50)
+    FONT_SIZE = 40
+    ITEM_ACTIONS_LIST_OFFSET = Vector2(400, 0)
 
-    def __init__(self, inventory_ref: Inventory) -> None:
-        super().__init__(Vector2())
+    def __init__(self, player: Player) -> None:
+        super().__init__(self.SCREEN_PANEL_OFFSET)
 
-        self.ui_elems = list()
-        self.is_visible = False
-        self.inventory = inventory_ref
+        self.player = player
+        self.font = pygame.font.Font(FONT_PATH, self.FONT_SIZE)
+        self.current_selected_item_index = 0
 
     def render(self):
-        self.hide()
+        super().render()
 
-        self.is_visible = True
+        self.add_element(
+            Button(Vector2(), "Inventory", self.font))
 
-        font = pygame.font.Font(FONT_PATH, 40)
+        def on_slot_click(i):
+            index = i
+            self.current_selected_item_index = index
+            self.item_actions_context_menu()
 
-        for i, item in enumerate(self.inventory.grid):
+        for i, item in enumerate(self.player.inventory.grid):
             if item is None:
                 continue
 
-            item_btn = Button(self.SCREEN_PANEL_OFFSET +
-                              Vector2(0, i * 50), f"{item.NAME} x{item.amount}", font)
-            self.ui_elems.append(item_btn)
+            self.add_element(Button(Vector2(
+                0, (i + 1) * self.FONT_SIZE), f"{item.NAME} x{item.amount}", self.font,
+                partial(on_slot_click, i)
+            ))
 
-    def hide(self):
-        [el.destroy() for el in self.ui_elems]
-        self.ui_elems = list()
+    def item_actions_context_menu(self):
+        mouse_pos = pygame.mouse.get_pos()
+        item = self.player.inventory.get_slot(self.current_selected_item_index)
 
-        self.is_visible = False
+        if item is None:
+            return
+
+        def drop(index):
+            self.player.drop_item_from_inventory(index)
+            self.render()
+
+        action_list = ActionsPanel(Vector2.from_tuple(
+            mouse_pos), f"{item.NAME} x{item.amount}", {"drop": partial(drop, self.current_selected_item_index)}, self.font)
+        action_list.render()
+        self.add_element(action_list, False)

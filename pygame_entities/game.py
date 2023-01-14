@@ -52,15 +52,14 @@ class Game:
         self.void_color: Tuple[int, int, int] = void_color
         self.delta_time = 1 / self.framerate
 
-        self._screen_resolution: Tuple[int, int] = screen_resolution
-        self._screen = pygame.display.set_mode(self._screen_resolution)
+        self._screen = pygame.display.set_mode(screen_resolution)
+        self._screen_resolution = self.screen.get_size()
         self._clock = pygame.time.Clock()
         self.running = True
         self._sprites = pygame.sprite.LayeredUpdates()
 
         # Using dict, because with dict we can remove entities from game in O(1) time
         self._entity_counter = 0
-        self._entities_for_delete = list()
         self._enabled_entities = dict()
         self._disabled_entities = dict()
 
@@ -70,7 +69,9 @@ class Game:
         self._camera_follow_object = None
 
         # for event system
-        self._subscribed_events: Dict[int, List[FunctionType]] = dict()
+        self._subscribed_events: Dict[int,
+                                      Dict[int, FunctionType]] = dict()
+        self._subscribers_counter = 0
 
     @property
     def screen(self) -> pygame.Surface:
@@ -105,7 +106,7 @@ class Game:
         """
         List of disabled entities
         """
-        return self._disabled_entities.values()
+        return list(self._disabled_entities.values())
 
     def camera_follow_entity(self, entity: Union["Entity", None]):
         """
@@ -126,17 +127,28 @@ class Game:
         Gets all pygame events and calling subscribers of each event type that returned.
         """
         for event in pygame.event.get():
-            for func in self._subscribed_events.get(event.type, []):
+            for func in list(self._subscribed_events.get(event.type, {}).values()):
                 func(event)
 
-    def subsribe_for_event(self, function: Union[MethodType, FunctionType], event_type: int):
+    def subscribe_for_event(self, function: Union[MethodType, FunctionType], event_type: int) -> int:
         """
         Subscribe a function for pygame event.
 
         This function will be called when new event with type event_type will be received
+
+        Returning ID of event subsrciber
         """
-        subscribers = self._subscribed_events.get(event_type, [])
-        subscribers.append(function)
+        subscribers = self._subscribed_events.get(event_type, {})
+        subscribers[self._subscribers_counter] = function
+        self._subscribed_events[event_type] = subscribers
+
+        self._subscribers_counter += 1
+        return self._subscribers_counter
+
+    def delete_event_subsriber(self, event_type: int, subscriber_id: int):
+        subscribers = self._subscribed_events.get(event_type, {})
+        if subscriber_id in subscribers.keys():
+            del subscribers[subscriber_id]
         self._subscribed_events[event_type] = subscribers
 
     def run(self):
@@ -152,7 +164,6 @@ class Game:
             self._update_events()
             self._update_entities()
             self._sprites.update()
-            self._delete_entities()
             self._camera_follow()
 
             self._sprites.draw(self._screen)
@@ -232,20 +243,10 @@ class Game:
         """
         Adds entity into pool for deleting
         """
-        if entity_id not in self._entities_for_delete:
-            self._entities_for_delete.append(entity_id)
-
-    def _delete_entities(self):
-        """
-        Deleting all entities that in delete pool
-        """
-        for entity_id in self._entities_for_delete:
-            if entity_id in self._enabled_entities.keys():
-                del self._enabled_entities[entity_id]
-            else:
-                del self._disabled_entities[entity_id]
-
-        self._entities_for_delete = list()
+        if entity_id in self._enabled_entities.keys():
+            del self._enabled_entities[entity_id]
+        elif entity_id in self._enabled_entities.keys():
+            del self._disabled_entities[entity_id]
 
     def from_screen_to_world_point(self, on_screen_point: Vector2) -> Vector2:
         return on_screen_point + self._camera_position

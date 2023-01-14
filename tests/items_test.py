@@ -24,7 +24,7 @@ if True:
     from entities.item import ItemEntity
     from items import Wood, Iron, GoldIngot
 
-RESOLUTION = (0, 0)
+RESOLUTION = (800, 800)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
 
@@ -38,7 +38,7 @@ def on_quit_event(event: pygame.event.Event):
 
 def main() -> None:
     game = Game.get_instance(RESOLUTION, FRAMERATE, VOID_COLOR)
-    game.subsribe_for_event(on_quit_event, pygame.QUIT)
+    game.subscribe_for_event(on_quit_event, pygame.QUIT)
 
     # Создаем карту размерами 100x100 тайлов, с чанками 10x10
     tile_map = Map(Vector2(), (10, 10), (2, 2), SandTile)
@@ -54,13 +54,13 @@ def main() -> None:
             game.camera_follow_entity(None)
             player.set_hp(0)
 
-    game.subsribe_for_event(kill_player, pygame.KEYDOWN)
+    game.subscribe_for_event(kill_player, pygame.KEYDOWN)
 
     # генерируем айтемсы
     for x in range(10):
         for y in range(10):
             ItemEntity(Vector2(x * 128, y * 128),
-                       choice([Wood, Iron, GoldIngot])(1))
+                       GoldIngot(1))
 
     game.camera_follow_entity(player)
 

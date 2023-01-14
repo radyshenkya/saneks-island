@@ -27,6 +27,7 @@ class Entity:
 
         self._on_update = list()
         self._on_destroy = list()
+        self._subscribed_events = list()
 
         # Registering entity
         self.id = 0
@@ -64,6 +65,10 @@ class Entity:
         for method in self._on_destroy:
             method()
 
+        for event in self._subscribed_events:
+            self.game.delete_event_subsriber(*event)
+
+        self._subscribed_events = list()
         self._on_destroy = list()
         self._on_update = list()
         self.game.delete_entity(self.id)
@@ -81,6 +86,11 @@ class Entity:
         """
         self.game.disable_entity(self)
         self._enabled = False
+
+    def subscribe_for_event(self, function: FunctionType, event_type: int):
+        subscriber_id = self.game.subscribe_for_event(function, event_type)
+
+        self._subscribed_events.append((event_type, subscriber_id))
 
     @property
     def enabled(self) -> bool:

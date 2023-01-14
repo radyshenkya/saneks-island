@@ -55,7 +55,7 @@ def on_quit_event(event: pygame.event.Event):
 
 def main() -> None:
     game = Game.get_instance(RESOLUTION, FRAMERATE, VOID_COLOR)
-    game.subsribe_for_event(on_quit_event, pygame.QUIT)
+    game.subscribe_for_event(on_quit_event, pygame.QUIT)
 
     # Создаем карту размерами 100x100 тайлов, с чанками 10x10
     tile_map = Map(Vector2(), (10, 10), (10, 10), SandTile)

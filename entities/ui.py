@@ -1,10 +1,11 @@
 from types import FunctionType
-from typing import Tuple
+from typing import List, Tuple
 
 import pygame
+from pygame_entities.entities.entity import Entity
 from pygame_entities.entities.mixins import SpriteMixin
 from pygame_entities.utils.math import Vector2
-from pygame_entities.utils.drawable import FontSprite, FontSpriteWithCameraOffset
+from pygame_entities.utils.drawable import FontSprite, FontSpriteWithCameraOffset, BaseSprite
 
 
 UI_LAYER = 100000
@@ -18,7 +19,8 @@ class Button(SpriteMixin):
             on_lbm_callback: FunctionType = None,
             on_rbm_callback: FunctionType = None,
             color: Tuple[int, int, int] = (255, 255, 255),
-            color_on_hover: Tuple[int, int, int] = (150, 150, 150)) -> None:
+            color_on_hover: Tuple[int, int, int] = (150, 150, 150),
+            LAYER=UI_LAYER) -> None:
         super().__init__(position)
 
         self.text = text
@@ -28,7 +30,7 @@ class Button(SpriteMixin):
         self._color = color
         self._color_on_hover = color_on_hover
 
-        self.sprite_init(FontSprite(text, color, font, UI_LAYER))
+        self.sprite_init(FontSprite(text, color, font, LAYER))
         self.sprite: FontSprite
 
         self.collider_rect = pygame.Rect(
@@ -36,12 +38,15 @@ class Button(SpriteMixin):
 
         self.subscribe_on_update(self.on_hover)
 
-        self.game.subsribe_for_event(
+        self.subscribe_for_event(
             self.on_mouse_click, pygame.MOUSEBUTTONDOWN)
 
         self._is_hovered = False
 
     def on_hover(self, _: float) -> None:
+        self.collider_rect = pygame.Rect(
+            self.position.x, self.position.y, self.sprite.image.get_width(), self.sprite.image.get_height())
+
         if self.collider_rect.collidepoint(pygame.mouse.get_pos()):
             if self._is_hovered:
                 return
@@ -87,7 +92,7 @@ class InputField(Button):
         self.max_length = max_length
         self.is_focused = False
 
-        self.game.subsribe_for_event(self.on_key_pressed, pygame.KEYDOWN)
+        self.game.subscribe_for_event(self.on_key_pressed, pygame.KEYDOWN)
 
         self.text_update()
 
@@ -153,4 +158,89 @@ class Popup(SpriteMixin):
         self.position -= Vector2(0, 1)
 
         if self.delete_second <= self.timer:
+            self.destroy()
+
+
+class UIElementsContainer(Entity):
+    def __init__(self, position: Vector2):
+        super().__init__(position)
+
+        self.ui_elements: List[SpriteMixin] = list()
+        self.subscribe_on_destroy(self.hide)
+        self.is_visible = False
+
+    def _pre_render(self):
+        self.hide()
+        self.is_visible = True
+
+    def render(self):
+        """
+        Для реализации
+        """
+        self._pre_render()
+        pass
+
+    def add_element(self, new_elem: SpriteMixin, add_position=True):
+        if add_position:
+            new_elem.position += self.position
+        self.ui_elements.append(new_elem)
+
+    def hide(self):
+        if not self.is_visible:
+            return
+
+        self.is_visible = False
+        for el in self.ui_elements:
+            el.destroy()
+
+        self.ui_elements = []
+
+
+class ActionsPanel(UIElementsContainer):
+    def __init__(self, position: Vector2, panel_name: str, actions, font: pygame.font.Font, background_color=(200, 200, 200)):
+        super().__init__(position)
+        self.name = panel_name
+        self.actions = actions
+        self.font = font
+        self.bg_color = background_color
+
+        self.calculate_panel_box()
+        self.game.subscribe_for_event(
+            self.on_mouse_click, pygame.MOUSEBUTTONDOWN)
+
+    def add_action(self, action_name, action_callback):
+        self.actions[action_name] = action_callback
+
+    def calculate_panel_box(self):
+        width = max([el.sprite.image.get_width()
+                    for el in self.ui_elements] + [1])
+        height = sum([el.sprite.image.get_height()
+                     for el in self.ui_elements] + [1])
+
+        self.calculated_panel_box = pygame.Rect(
+            self.position.x, self.position.y, width, height)
+
+    def render(self):
+        super().render()
+
+        self.add_element(
+            Button(Vector2(), self.name, self.font, LAYER=UI_LAYER + 1)
+        )
+
+        for i, el in enumerate(self.actions.items()):
+            self.add_element(
+                Button(Vector2(0, (i + 1) * self.font.get_height()), el[0], self.font, el[1], LAYER=UI_LAYER + 1))
+
+        self.calculate_panel_box()
+        new_rect = SpriteMixin(
+            Vector2().from_tuple(self.calculated_panel_box.size) / 2)
+        new_rect.sprite_init(BaseSprite(pygame.Surface(
+            self.calculated_panel_box.size), UI_LAYER))
+
+        new_rect.sprite.image.fill(self.bg_color)
+
+        self.add_element(new_rect)
+
+    def on_mouse_click(self, event: pygame.event.Event) -> None:
+        if not self.calculated_panel_box.collidepoint(event.pos):
             self.destroy()

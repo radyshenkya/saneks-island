@@ -76,15 +76,15 @@ class Inventory:
 
         return None
 
-    def set_slot(self, item: Item, index: int):
+    def set_slot(self, item: Item | None, index: int):
         self.grid[index] = item
 
-    def get_slot(self, index: int) -> Item:
+    def get_slot(self, index: int) -> Item | None:
         return self.grid[index]
 
-    def swap_slot(self, slot_index: int, item: Item) -> Item | None:
-        previous_item = self.grid[slot_index]
-        self.grid[slot_index] = item
+    def swap_slot(self, slot_index: int, item: Item | None) -> Item | None:
+        previous_item = self.get_slot(slot_index)
+        self.set_slot(item, slot_index)
         return previous_item
 
 

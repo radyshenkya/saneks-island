@@ -24,7 +24,7 @@ if True:
     from entities.item import ItemEntity
     from items import Wood, Iron, GoldIngot
 
-RESOLUTION = (800, 800)
+RESOLUTION = (0, 0)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
 
@@ -60,7 +60,7 @@ def main() -> None:
     for x in range(10):
         for y in range(10):
             ItemEntity(Vector2(x * 128, y * 128),
-                       GoldIngot(1))
+                       choice([GoldIngot, Wood, Iron])(1))
 
     game.camera_follow_entity(player)
 

@@ -26,4 +26,4 @@ class ItemEntity(OnMapSpriteMixin):
             Popup(self.position, f"{self._item.NAME}",
                   pygame.font.Font(FONT_PATH, 25), False, 2)
 
-        self._item = Item
+        self._item = new_value

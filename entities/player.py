@@ -159,7 +159,11 @@ class InventoryPanelUI(UIElementsContainer):
             self.current_selected_item_index = index
             self.item_actions_context_menu()
 
-        for i, item in enumerate(self.player.inventory.grid):
+        print(self.player.inventory.grid)
+
+        for i in range(self.player.inventory.slots):
+            item = self.player.inventory.get_slot(i)
+
             if item is None:
                 continue
 

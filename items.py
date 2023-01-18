@@ -1,5 +1,7 @@
 import pickle
 from assets import Sprites
+from entities.ui import Popup
+from pygame_entities.entities.entity import Entity
 
 
 class Item:
@@ -10,30 +12,16 @@ class Item:
     def __init__(self, amount: int) -> None:
         self.amount = amount
 
+    def is_valid(self) -> bool:
+        if self.amount >= 1:
+            return True
+
+        return False
+
 
 class UsableItem(Item):
-    def __init__(self, amount: int, durability: float) -> None:
-        self.amount = amount
-        self.durability = durability
-
-    def use(self):
-        self.durability -= 0
-
-
-class ConsumableItem(Item):
-    def __init__(self, amount: int) -> None:
-        self.amount = amount
-
-    def use(self):
-        self.amount -= 1
-
-
-class PlaceableItem(Item):
-    def __init__(self, amount: int) -> None:
-        self.amount = amount
-
-    def use(self):
-        self.amount -= 1
+    def use(self, initiator: Entity):
+        raise NotImplementedError("use() method needs to be implemented")
 
 
 class Inventory:
@@ -148,12 +136,12 @@ class Arrow(Item):
     IMAGE = Sprites.BAG  # TODO: add image
 
 
-class RawMeat(ConsumableItem):
+class RawMeat(UsableItem):
     NAME = 'Raw Meat'
     IMAGE = Sprites.BAG  # TODO: add image
 
 
-class CookedMeat(ConsumableItem):
+class CookedMeat(UsableItem):
     NAME = 'Cooked Meat'
     IMAGE = Sprites.BAG  # TODO: add image
 

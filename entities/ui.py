@@ -11,6 +11,17 @@ from pygame_entities.utils.drawable import FontSprite, FontSpriteWithCameraOffse
 UI_LAYER = 100000
 
 
+class Image(SpriteMixin):
+    def __init__(self, position: Vector2, image: pygame.Surface, layer=UI_LAYER, rescale_ratio=(1, 1)) -> None:
+        super().__init__(position)
+        new_image = pygame.transform.scale(image, (image.get_width(
+        ) * rescale_ratio[0], image.get_height() * rescale_ratio[1]))
+
+        print(position)
+
+        self.sprite_init(BaseSprite(new_image, layer=layer))
+
+
 class Button(SpriteMixin):
     def __init__(
             self, position: Vector2,
@@ -20,7 +31,7 @@ class Button(SpriteMixin):
             on_rbm_callback: FunctionType = None,
             color: Tuple[int, int, int] = (255, 255, 255),
             color_on_hover: Tuple[int, int, int] = (150, 150, 150),
-            LAYER=UI_LAYER) -> None:
+            layer=UI_LAYER) -> None:
         super().__init__(position)
 
         self.text = text
@@ -30,7 +41,7 @@ class Button(SpriteMixin):
         self._color = color
         self._color_on_hover = color_on_hover
 
-        self.sprite_init(FontSprite(text, color, font, LAYER))
+        self.sprite_init(FontSprite(text, color, font, layer))
         self.sprite: FontSprite
 
         self.collider_rect = pygame.Rect(
@@ -224,14 +235,15 @@ class ActionsPanel(UIElementsContainer):
         super().render()
 
         self.add_element(
-            Button(Vector2(), self.name, self.font, LAYER=UI_LAYER + 1)
+            Button(Vector2(), self.name, self.font, layer=UI_LAYER + 1)
         )
 
         for i, el in enumerate(self.actions.items()):
             self.add_element(
-                Button(Vector2(0, (i + 1) * self.font.get_height()), el[0], self.font, el[1], LAYER=UI_LAYER + 1))
+                Button(Vector2(0, (i + 1) * self.font.get_height()), el[0], self.font, el[1], layer=UI_LAYER + 1))
 
         self.calculate_panel_box()
+
         new_rect = SpriteMixin(
             Vector2().from_tuple(self.calculated_panel_box.size) / 2)
         new_rect.sprite_init(BaseSprite(pygame.Surface(

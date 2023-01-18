@@ -5,11 +5,11 @@ from functools import partial
 from typing import List
 from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
-from entities.ui import Button, UIElementsContainer, ActionsPanel
+from entities.ui import UI_LAYER, Button, Image, UIElementsContainer, ActionsPanel
 from entities.util_entities import OnMapSpriteMixin
 from entities.map import Map
 from assets import FONT_PATH, Sprites, SPRITE_SIZE, SPRITESHEET_UPSCALE
-from items import Inventory, Item
+from items import Inventory, Item, UsableItem
 from pygame_entities.entities.entity import Entity
 
 from pygame_entities.utils.drawable import AnimatedSpriteWithCameraOffset
@@ -51,14 +51,23 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         self.inventory: Inventory = Inventory(
             slots_count=self.INVENTORY_SLOTS_COUNT)
 
+        self.selected_item_slot = 0
+
         self.collision_init(self.COLLIDER_SIZE)
         self.velocity_init(False, 0.1)
 
         self.inventory_panel = InventoryPanelUI(self)
+        self.selected_slot_panel = SelectedSlotPanel(self)
 
         self.subscribe_on_update(self.move_player)
         self.subscribe_on_update(self.animate)
         self.subscribe_for_event(self.keys_handler, pygame.KEYDOWN)
+        self.subscribe_for_event(
+            self.mouse_buttons_handler, pygame.MOUSEBUTTONDOWN)
+        self.subscribe_for_event(
+            self.mouse_wheel_handler, pygame.MOUSEWHEEL)
+
+        self.update_ui()
 
     def move_player(self, delta_time: float):
         keys = pygame.key.get_pressed()
@@ -80,8 +89,22 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         if event.key == pygame.K_f:
             self.pickup_nearest_items()
 
-        if event.key == pygame.K_i:
+        elif event.key == pygame.K_i:
             self.toggle_inventory_panel()
+
+        elif event.key == pygame.K_q:
+            self.drop_item_from_inventory(self.selected_item_slot)
+
+    def mouse_buttons_handler(self, event: pygame.event.Event):
+        if event.button == 3:
+            # ПКМ
+            self.use_selected_item()
+
+    def mouse_wheel_handler(self, event: pygame.event.Event):
+        self.selected_item_slot += event.y
+        self.selected_item_slot %= self.inventory.slots
+
+        self.update_ui()
 
     def toggle_inventory_panel(self):
         if self.inventory_panel.is_visible:
@@ -97,8 +120,26 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             ent: ItemEntity
             ent.item = self.inventory.add_item(ent.item)
 
+        self.update_ui()
+
+    def use_selected_item(self):
+        selected_item = self.inventory.get_slot(self.selected_item_slot)
+
+        if not isinstance(selected_item, UsableItem):
+            return
+
+        selected_item.use(initiator=self)
+
+        if selected_item.amount <= 0:
+            self.inventory.set_slot(None, self.selected_item_slot)
+
+        self.update_ui()
+
+    def update_ui(self):
         if self.inventory_panel.is_visible:
             self.inventory_panel.render()
+
+        self.selected_slot_panel.render()
 
     def animate(self, delta_time: float):
         if self.velocity.x > 0:
@@ -121,8 +162,7 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         ItemEntity(self.position, self.inventory.swap_slot(slot_index, None))
 
-        if self.inventory_panel.is_visible:
-            self.inventory_panel.render()
+        self.update_ui()
 
     def get_loot(self) -> List[Item]:
         return [item for item in self.inventory.grid if not item is None]
@@ -137,7 +177,7 @@ class InventoryPanelUI(UIElementsContainer):
     """
     UI панелька инвентаря
     """
-    SCREEN_PANEL_OFFSET = Vector2(50, 50)
+    SCREEN_PANEL_OFFSET = Vector2(0, 0)
     FONT_SIZE = 40
     ITEM_ACTIONS_LIST_OFFSET = Vector2(400, 0)
 
@@ -159,8 +199,6 @@ class InventoryPanelUI(UIElementsContainer):
             self.current_selected_item_index = index
             self.item_actions_context_menu()
 
-        print(self.player.inventory.grid)
-
         for i in range(self.player.inventory.slots):
             item = self.player.inventory.get_slot(i)
 
@@ -169,7 +207,7 @@ class InventoryPanelUI(UIElementsContainer):
 
             self.add_element(Button(Vector2(
                 0, (i + 1) * self.FONT_SIZE), f"{item.NAME} x{item.amount}", self.font,
-                partial(on_slot_click, i)
+                partial(on_slot_click, i), color=(150, 255, 200) if i == self.player.selected_item_slot else (255, 255, 255)
             ))
 
     def item_actions_context_menu(self):
@@ -184,6 +222,34 @@ class InventoryPanelUI(UIElementsContainer):
             self.render()
 
         action_list = ActionsPanel(Vector2.from_tuple(
-            mouse_pos), f"{item.NAME} x{item.amount}", {"drop": partial(drop, self.current_selected_item_index)}, self.font)
+            mouse_pos), f"{self.current_selected_item_index + 1}. {item.NAME} x{item.amount}", {"drop": partial(drop, self.current_selected_item_index)}, self.font)
         action_list.render()
         self.add_element(action_list, False)
+
+
+class SelectedSlotPanel(UIElementsContainer):
+    SLOT_IMAGE_RATIO = (1, 1)
+
+    def __init__(self, player: Player):
+        super().__init__(Vector2())
+
+        # Вычисляем позицию этой штуки
+        pos = Vector2(Sprites.ITEM_SLOT.get_width() / 2,
+                      self.game.screen_resolution[1] - Sprites.ITEM_SLOT.get_height() / 2)
+
+        self.position = pos
+
+        self.player = player
+
+    def render(self):
+        super().render()
+
+        self.add_element(Image(Vector2(), Sprites.ITEM_SLOT, UI_LAYER - 1))
+
+        displaying_item = self.player.inventory.get_slot(
+            self.player.selected_item_slot)
+
+        if displaying_item is None:
+            return
+
+        self.add_element(Image(Vector2(), displaying_item.IMAGE))

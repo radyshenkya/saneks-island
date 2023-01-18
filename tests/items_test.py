@@ -10,10 +10,13 @@ import pygame
 from inspect import getsourcefile
 import os.path as path
 import sys
+
+
 current_dir = path.dirname(path.abspath(getsourcefile(lambda: 0)))
 sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 
 if True:
+    from pygame_entities.entities.entity import Entity
     from pygame_entities.utils.math import Vector2
     from pygame_entities.utils.drawable import BaseSprite, SpriteWithCameraOffset
     from pygame_entities.game import Game
@@ -22,11 +25,30 @@ if True:
     from entities.map import Map, SandTile, fill_map
     from entities.player import Player
     from entities.item import ItemEntity
-    from items import Wood, Iron, GoldIngot
+    from entities.ui import Popup
+    from items import Wood, Iron, GoldIngot, UsableItem
 
-RESOLUTION = (0, 0)
+RESOLUTION = (800, 800)
 FRAMERATE = 60
 VOID_COLOR = (50, 50, 50)  # Цвет фона
+
+
+class TestUsableItem(UsableItem):
+    NAME = "TEST USABLE ITEM"
+    IMAGE = Sprites.BAG
+    MAX_AMOUNT = 20
+
+    def use(self, initiator: Entity):
+        from assets import FONT_PATH
+        from pygame import font
+
+        new_item = choice([Wood, Iron, GoldIngot, self.__class__])(1)
+
+        ItemEntity(initiator.position, new_item)
+        Popup(initiator.position, f"TestItemUsed", font.Font(
+            FONT_PATH, 40), False)
+
+        self.amount -= 1
 
 
 def on_quit_event(event: pygame.event.Event):
@@ -60,7 +82,7 @@ def main() -> None:
     for x in range(10):
         for y in range(10):
             ItemEntity(Vector2(x * 128, y * 128),
-                       choice([GoldIngot, Wood, Iron])(1))
+                       TestUsableItem(2))
 
     game.camera_follow_entity(player)
 

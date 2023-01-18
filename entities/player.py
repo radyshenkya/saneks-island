@@ -101,7 +101,7 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
             self.use_selected_item()
 
     def mouse_wheel_handler(self, event: pygame.event.Event):
-        self.selected_item_slot += event.y
+        self.selected_item_slot -= event.y
         self.selected_item_slot %= self.inventory.slots
 
         self.update_ui()
@@ -228,10 +228,12 @@ class InventoryPanelUI(UIElementsContainer):
 
 
 class SelectedSlotPanel(UIElementsContainer):
-    SLOT_IMAGE_RATIO = (1, 1)
+    FONT_SIZE = 30
 
     def __init__(self, player: Player):
         super().__init__(Vector2())
+
+        self.font = pygame.font.Font(FONT_PATH, self.FONT_SIZE)
 
         # Вычисляем позицию этой штуки
         pos = Vector2(Sprites.ITEM_SLOT.get_width() / 2,
@@ -252,4 +254,9 @@ class SelectedSlotPanel(UIElementsContainer):
         if displaying_item is None:
             return
 
+        # Надпись предмета
+        self.add_element(
+            Button(Vector2(-Sprites.ITEM_SLOT.get_width() / 2, -Sprites.ITEM_SLOT.get_height() / 2 - self.FONT_SIZE), f"{displaying_item.NAME} x{displaying_item.amount}", self.font))
+
+        # Картинка предмета
         self.add_element(Image(Vector2(), displaying_item.IMAGE))

@@ -220,7 +220,11 @@ class ActionsPanel(UIElementsContainer):
             self.on_mouse_click, pygame.MOUSEBUTTONDOWN)
 
     def add_action(self, action_name, action_callback):
-        self.actions[action_name] = action_callback
+        def destroy_after_action_callback():
+            action_callback()
+            self.destroy()
+
+        self.actions[action_name] = destroy_after_action_callback
 
     def calculate_panel_box(self):
         width = max([el.sprite.image.get_width()

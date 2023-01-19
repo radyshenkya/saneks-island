@@ -171,6 +171,11 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         self.speed = tiles_in_second * SPRITE_SIZE[0]
         print(self.speed)
 
+    def on_die(self):
+        super().on_die()
+
+        self.inventory = Inventory(self.INVENTORY_SLOTS_COUNT)
+
 
 # за такую реализацию убить мало, но как бы другие фичи проекта до 19 сами себя не сделают, поэтому как то так
 class InventoryPanelUI(UIElementsContainer):

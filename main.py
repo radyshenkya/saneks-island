@@ -1,5 +1,6 @@
 from pygame_entities.game import Game
 import pygame
+pygame.init()
 
 
 RESOLUTION = (800, 640)

@@ -1,48 +1,16 @@
 from functools import partial
-from assets import FONT_PATH, Sprites
-from entities.item import ItemEntity
-from entities.living_entities import LivingEntity
-from entities.map import Map
-from entities.ui import ActionsPanel
-from entities.util_entities import OnMapSpriteMixin
 
 import pygame
-from items import Inventory
-from pygame_entities.utils.drawable import SpriteWithCameraOffset
-from pygame_entities.entities.mixins import MouseEventMixin, CollisionMixin
-
+from assets import FONT_PATH, Sprites
+from entities.building import Building, BuildingItem
+from entities.item import ItemEntity
+from entities.ui import ActionsPanel
+from items.inventory import Inventory
+from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2
 
 
-class Building(LivingEntity, OnMapSpriteMixin, MouseEventMixin):
-    IMAGE: pygame.Surface = None
-    NAME = "BaseBuildingClass"
-    HP = 1000
-    IS_TRIGGER = False
-    IS_USABLE = False
-
-    def __init__(self, position: Vector2, map: Map) -> None:
-        super().__init__(position, self.HP, map)
-
-        self.sprite_init(SpriteWithCameraOffset(self.IMAGE), Vector2())
-
-        self.collision_init(Vector2.from_tuple(
-            self.IMAGE.get_size()) / 2, self.IS_TRIGGER, self.IS_USABLE)
-
-        if self.IS_USABLE:
-            self.mouse_events_init()
-
-            def on_click(btn):
-                if btn == 1:
-                    self.use()
-
-            self.subscribe_on_mouse_down(on_click)
-
-    def use(self):
-        raise NotImplementedError("Building's use() needs to be implemented")
-
-
-class ChestEntity(Building):
+class Chest(Building):
     """Сущность сундука"""
     IMAGE = Sprites.CHEST
     NAME = "Chest"
@@ -56,11 +24,11 @@ class ChestEntity(Building):
     SLOT_COUNT = 10
     ITEMS_PICKUP_RADIUS = 64
 
-    def __init__(self, position: Vector2, map: Map) -> None:
-        super().__init__(position, map)
+    def __init__(self, position: Vector2) -> None:
         self.inventory = Inventory(self.SLOT_COUNT)
+        super().__init__(position)
 
-    def use(self):
+    def use(self, _: Entity):
         action_list = ActionsPanel(
             Vector2.from_tuple(pygame.mouse.get_pos()), "Chest Actions", {}, self.FONT)
 
@@ -71,7 +39,7 @@ class ChestEntity(Building):
                 continue
 
             action_list.add_action(
-                f"Drop {item.NAME} x{item.amount}", partial(self.drop_item, i))
+                f"Drop {item.get_name()} x{item.amount}", partial(self.drop_item, i))
 
         action_list.render()
 
@@ -90,3 +58,7 @@ class ChestEntity(Building):
             return
 
         ItemEntity(self.position, self.inventory.swap_slot(slot_index, None))
+
+
+class ChestItem(BuildingItem):
+    BUILDING = Chest

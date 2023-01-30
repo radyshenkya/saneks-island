@@ -24,10 +24,11 @@ if True:
     from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
-    from entities.player import Player
-    from entities.item import ItemEntity
-    from entities.ui import Popup
-    from entities.buildings import ChestEntity
+    from entities import Player
+    from entities import ItemEntity
+    from entities import Popup
+    from entities import Chest
+    from entities.buildings import ChestItem
     from items import Wood, Iron, GoldIngot, UsableItem
 
 RESOLUTION = (800, 800)
@@ -70,7 +71,7 @@ def main() -> None:
     # Генерируем карту
     fill_map(tile_map, 1)
 
-    player = Player(Vector2(100, 100), tile_map)
+    player = Player(Vector2(100, 100))
 
     # тест для убыйства игрока
     def kill_player(event):
@@ -86,7 +87,9 @@ def main() -> None:
             ItemEntity(Vector2(x * 100, y * 100),
                        TestUsableItem(1))
 
-    ChestEntity(Vector2(300, 300), tile_map)
+    chest_item = ChestItem(3)
+
+    ItemEntity(Vector2(300, 300), chest_item)
 
     game.camera_follow_entity(player)
 

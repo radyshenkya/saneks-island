@@ -279,12 +279,12 @@ def fill_map(map: Map, seed: int, noise_multiplier=0.1):
             # +0.1 используется всегда, ибо если у нас будет ровное число (без чисел после запятой)
             # то шум перлина будет выдавать константное значение
             noise = perlin((noise_multiplier * x + 0.1,
-                           noise_multiplier * y + 0.1)) + 1  # + 0.6
+                           noise_multiplier * y + 0.1)) + 0.6
 
             # Эффект скругления суши. Чем ближе к центру карты - тем больше шанс того, что там будет не вода
             # Помоему эта формула имеет что-то общее с градиентом гаусса, но на самом деле я ее выдумал
-            noise *= (max_magnitude - (map_center - Vector2(x, y)
-                                       ).magnitude()) / max_magnitude
+            # noise *= (max_magnitude - (map_center - Vector2(x, y)
+            #                            ).magnitude()) / max_magnitude
 
             # Тут идет вычисление индекса на основе результатов нашего шума
             tile_index = max(

@@ -3,6 +3,7 @@
 """
 from functools import partial
 from typing import List
+from entities.building import Building
 from entities.item import ItemEntity
 from entities.living_entities import LivingEntity
 from entities.ui import UI_LAYER, Button, Image, UIElementsContainer, ActionsPanel
@@ -39,8 +40,8 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
     ITEMS_PICKUP_RADIUS = 128
 
-    def __init__(self, position: Vector2, tile_map: Map) -> None:
-        super().__init__(position, self.DEFAULT_HP, tile_map)
+    def __init__(self, position: Vector2) -> None:
+        super().__init__(position, self.DEFAULT_HP)
         self.set_speed(self.DEFAULT_SPEED)
 
         self.sprite_init(AnimatedSpriteWithCameraOffset(
@@ -99,6 +100,9 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         if event.button == 3:
             # ПКМ
             self.use_selected_item()
+        elif event.button == 1:
+            # ЛКМ
+            self.use_building()
 
     def mouse_wheel_handler(self, event: pygame.event.Event):
         self.selected_item_slot -= event.y
@@ -135,6 +139,17 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         self.update_ui()
 
+    def use_building(self):
+        mouse_pos = self.game.from_screen_to_world_point(
+            Vector2.from_tuple(pygame.mouse.get_pos())).get_tuple()
+
+        for building in filter(lambda x: isinstance(x, Building), self.game.enabled_entities):
+            building: Building
+
+            if building.collider_rect.collidepoint(mouse_pos) and building.IS_USABLE:
+                building.use(self)
+                break
+
     def update_ui(self):
         if self.inventory_panel.is_visible:
             self.inventory_panel.render()
@@ -169,7 +184,6 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
     def set_speed(self, tiles_in_second: float) -> None:
         self.speed = tiles_in_second * SPRITE_SIZE[0]
-        print(self.speed)
 
     def on_die(self):
         super().on_die()
@@ -211,7 +225,7 @@ class InventoryPanelUI(UIElementsContainer):
                 continue
 
             self.add_element(Button(Vector2(
-                0, (i + 1) * self.FONT_SIZE), f"{item.NAME} x{item.amount}", self.font,
+                0, (i + 1) * self.FONT_SIZE), f"{item.get_name()} x{item.amount}", self.font,
                 partial(on_slot_click, i), color=(150, 255, 200) if i == self.player.selected_item_slot else (255, 255, 255)
             ))
 
@@ -227,7 +241,7 @@ class InventoryPanelUI(UIElementsContainer):
             self.render()
 
         action_list = ActionsPanel(Vector2.from_tuple(
-            mouse_pos), f"{self.current_selected_item_index + 1}. {item.NAME} x{item.amount}", {"drop": partial(drop, self.current_selected_item_index)}, self.font)
+            mouse_pos), f"{self.current_selected_item_index + 1}. {item.get_name()} x{item.amount}", {"drop": partial(drop, self.current_selected_item_index)}, self.font)
         action_list.render()
         self.add_element(action_list, False)
 
@@ -261,7 +275,7 @@ class SelectedSlotPanel(UIElementsContainer):
 
         # Надпись предмета
         self.add_element(
-            Button(Vector2(-Sprites.ITEM_SLOT.get_width() / 2, -Sprites.ITEM_SLOT.get_height() / 2 - self.FONT_SIZE), f"{displaying_item.NAME} x{displaying_item.amount}", self.font))
+            Button(Vector2(-Sprites.ITEM_SLOT.get_width() / 2, -Sprites.ITEM_SLOT.get_height() / 2 - self.FONT_SIZE), f"{displaying_item.get_name()} x{displaying_item.amount}", self.font))
 
         # Картинка предмета
-        self.add_element(Image(Vector2(), displaying_item.IMAGE))
+        self.add_element(Image(Vector2(), displaying_item.get_image()))

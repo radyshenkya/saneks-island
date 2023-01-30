@@ -17,8 +17,6 @@ class Image(SpriteMixin):
         new_image = pygame.transform.scale(image, (image.get_width(
         ) * rescale_ratio[0], image.get_height() * rescale_ratio[1]))
 
-        print(position)
-
         self.sprite_init(BaseSprite(new_image, layer=layer))
 
 

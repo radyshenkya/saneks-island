@@ -8,12 +8,12 @@ from pygame_entities.utils.drawable import SpriteWithCameraOffset
 
 
 class ItemEntity(OnMapSpriteMixin):
-
     def __init__(self, position: Vector2, item: Item) -> None:
         super().__init__(position)
 
         self._item = item
-        self.sprite_init(SpriteWithCameraOffset(self.item.IMAGE), Vector2())
+        self.sprite_init(SpriteWithCameraOffset(
+            self.item.get_image()), Vector2())
 
     @property
     def item(self) -> Item:
@@ -23,7 +23,7 @@ class ItemEntity(OnMapSpriteMixin):
     def item(self, new_value: Item | None):
         if new_value is None:
             self.destroy()
-            Popup(self.position, f"{self._item.NAME}",
+            Popup(self.position, f"{self._item.get_name()}",
                   pygame.font.Font(FONT_PATH, 25), False, 2)
 
         self._item = new_value

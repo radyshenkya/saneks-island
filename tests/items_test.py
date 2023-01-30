@@ -22,7 +22,7 @@ if True:
     from pygame_entities.game import Game
     from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
     from assets import Sprites
-    from entities.map import Map, SandTile, fill_map
+    from entities import Map, SandTile, fill_map
     from entities.player import Player
     from entities.item import ItemEntity
     from entities.ui import Popup

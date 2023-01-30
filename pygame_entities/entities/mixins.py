@@ -239,13 +239,14 @@ class MouseEventMixin(CollisionMixin):
         """
         Initializing this mixin
         """
+        
         self._on_mouse_down = list()
         self._on_mouse_up = list()
         self._on_mouse_motion = list()
-        self.game.subscribe_for_event(
+        self.subscribe_for_event(
             self._mouse_events, pygame.MOUSEBUTTONDOWN)
-        self.game.subscribe_for_event(self._mouse_events, pygame.MOUSEBUTTONUP)
-        self.game.subscribe_for_event(self._mouse_events, pygame.MOUSEMOTION)
+        self.subscribe_for_event(self._mouse_events, pygame.MOUSEBUTTONUP)
+        self.subscribe_for_event(self._mouse_events, pygame.MOUSEMOTION)
 
     def subscribe_on_mouse_down(self, function: Union[MethodType, FunctionType]):
         """

@@ -82,6 +82,21 @@ class Sprites:
     LEAVES = SPRITESHEET.image_at((7, 4))
     STRING = SPRITESHEET.image_at((8, 4))
 
+    PICKAXE_GOLD = SPRITESHEET.image_at((0, 5))
+    PICKAXE_IRON = SPRITESHEET.image_at((1, 5))
+    PICKAXE_STONE = SPRITESHEET.image_at((2, 5))
+    PICKAXE_WOOD = SPRITESHEET.image_at((3, 5))
+
+    SWORD_GOLD = SPRITESHEET.image_at((4, 5))
+    SWORD_IRON = SPRITESHEET.image_at((5, 5))
+    SWORD_STONE = SPRITESHEET.image_at((6, 5))
+    SWORD_WOOD = SPRITESHEET.image_at((7, 5))
+
+    CRATE = SPRITESHEET.image_at((7, 6))
+
+    COOKED_MEAT = SPRITESHEET.image_at((8, 6))
+    RAW_MEAT = SPRITESHEET.image_at((9, 6))
+
     SKULL = SPRITESHEET.image_at((8, 2))
 
     FURNACE = SPRITESHEET.image_at((6, 1))

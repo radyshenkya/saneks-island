@@ -21,9 +21,11 @@ class ItemEntity(OnMapSpriteMixin):
 
     @item.setter
     def item(self, new_value: Item | None):
-        if new_value is None:
-            self.destroy()
-            Popup(self.position, f"{self._item.get_name()}",
-                  pygame.font.Font(FONT_PATH, 25), False, 2)
-
         self._item = new_value
+        self.update_item()
+
+    def update_item(self):
+        if self.item is None or self.item.amount <= 0:
+            self.destroy()
+            Popup(self.position, "Picked up!",
+                  pygame.font.Font(FONT_PATH, 25), False, 2)

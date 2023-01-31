@@ -1,8 +1,9 @@
+from typing import List
 from entities.living_entities import LivingEntity
 from entities.util_entities import OnMapSpriteMixin
 
 import pygame
-from items.item import UsableItem
+from items.item import Item, UsableItem
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.drawable import SpriteWithCameraOffset
 from pygame_entities.entities.mixins import CollisionMixin, MouseEventMixin
@@ -53,3 +54,6 @@ class Building(LivingEntity, OnMapSpriteMixin, CollisionMixin):
             BUILDING = cls
 
         return NewBuildingItem
+
+    def get_loot(self) -> List["Item"]:
+        return [self.get_item_class()(1)]

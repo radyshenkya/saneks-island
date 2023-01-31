@@ -10,6 +10,7 @@ import os.path as path
 from inspect import getsourcefile
 from random import choice
 import pygame
+
 pygame.init()
 
 
@@ -24,11 +25,7 @@ if True:
     from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
-    from entities import Player
-    from entities import ItemEntity
-    from entities import Popup
-    from entities import Chest
-    from entities.buildings import ChestItem
+    from entities import Chest, Workbench, Popup, ItemEntity, Player
     from items import Wood, Iron, GoldIngot, UsableItem
 
 RESOLUTION = (800, 800)
@@ -87,9 +84,8 @@ def main() -> None:
             ItemEntity(Vector2(x * 100, y * 100),
                        TestUsableItem(1))
 
-    chest_item = ChestItem(3)
-
-    ItemEntity(Vector2(300, 300), chest_item)
+    ItemEntity(Vector2(300, 300), Chest.get_item_class()(3))
+    ItemEntity(Vector2(400, 400), Workbench.get_item_class()(1))
 
     game.camera_follow_entity(player)
 

@@ -1,4 +1,5 @@
 from functools import partial
+from random import randint
 from typing import List
 
 import pygame
@@ -6,7 +7,7 @@ from assets import FONT_PATH, Sprites
 from entities.building import Building
 from entities.item import ItemEntity
 from entities.ui import ActionsPanel, Popup
-from items.items import IronIngot, Wood
+from items.items import BasePickaxe, IronIngot, Rock, Wood, WoodenPickaxe, WoodenSword
 from items.recipes import Recipe
 from items.inventory import Inventory
 from items.item import Item
@@ -80,8 +81,8 @@ class Workbench(Building):
 
     RECIPES = [
         Recipe("Chest", {Wood: 1, IronIngot: 1}, {Chest.get_item_class(): 1}),
-        Recipe("Transform wood to iron ingot", {
-               Wood: 1}, {IronIngot: 1})
+        Recipe("Wooden Pickaxe", {Wood: 2}, {WoodenPickaxe: 1}),
+        Recipe("Wooden Sword", {Wood: 2}, {WoodenSword: 1})
     ]
 
     def use(self, _: Entity):
@@ -103,7 +104,7 @@ class Workbench(Building):
 
         if not is_valid:
             Popup(
-                self.position, f"Not enough {needs_ingr.get_name()}. Needed amount - {amount}", FONT)
+                self.position, f"Not enough {needs_ingr.get_name()}. Needed amount - {amount}", FONT, False)
             return
 
         res, _ = recipe.craft(nearby_items)
@@ -114,10 +115,32 @@ class Workbench(Building):
             ItemEntity(self.position, result_item)
 
         Popup(
-            self.position, f"{recipe.name}", FONT)
+            self.position, f"{recipe.name}", FONT, False)
 
     def count_nearby_items(self) -> List["ItemEntity"]:
         return [ent for ent in self.game.enabled_entities
                 if type(ent) == ItemEntity and
                 (ent.position - self.position).magnitude() <= self.ITEMS_PICKUP_RADIUS
                 ]
+
+
+class Stone(Building):
+    """Камень"""
+    IMAGE = Sprites.STONE
+    NAME = "Workbench"
+    HP = 5
+
+    IS_TRIGGER = False
+    IS_USABLE = False
+
+    # Включаем урон только от кирки
+    def add_hp(self, hp: int, initiator: Entity):
+        if not isinstance(initiator, BasePickaxe):
+            return
+
+        super().add_hp(hp)
+
+    def get_loot(self) -> List["Item"]:
+        return [
+            Rock(1) for _ in range(randint(1, 6))
+        ]

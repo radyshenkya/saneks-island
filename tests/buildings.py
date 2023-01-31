@@ -20,13 +20,11 @@ sys.path.insert(0, current_dir[:current_dir.rfind(path.sep)])
 if True:
     from pygame_entities.entities.entity import Entity
     from pygame_entities.utils.math import Vector2
-    from pygame_entities.utils.drawable import BaseSprite, SpriteWithCameraOffset
     from pygame_entities.game import Game
-    from pygame_entities.entities.mixins import SpriteMixin, BlockingCollisionMixin, VelocityMixin
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
-    from entities import Chest, Workbench, Popup, ItemEntity, Player
-    from items import Wood, Iron, GoldIngot, UsableItem, WoodenSword
+    from entities import Chest, Workbench, Popup, ItemEntity, Player, Stone
+    from items import Wood, Iron, GoldIngot, UsableItem, WoodenSword, WoodenPickaxe
 
 RESOLUTION = (800, 800)
 FRAMERATE = 60
@@ -79,14 +77,17 @@ def main() -> None:
     game.subscribe_for_event(kill_player, pygame.KEYDOWN)
 
     # генерируем айтемсы
-    for x in range(2):
-        for y in range(2):
+    for x in range(3):
+        for y in range(3):
             ItemEntity(Vector2(x * 100, y * 100),
-                       TestUsableItem(1))
+                       Wood(1))
 
     ItemEntity(Vector2(300, 300), Chest.get_item_class()(3))
     ItemEntity(Vector2(400, 400), Workbench.get_item_class()(1))
-    ItemEntity(Vector2(500, 500), WoodenSword(1))
+
+    Stone(Vector2(350, 350))
+    Stone(Vector2(550, 350))
+    Stone(Vector2(750, 350))
 
     game.camera_follow_entity(player)
 

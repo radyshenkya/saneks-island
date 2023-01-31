@@ -17,7 +17,7 @@ class LivingEntity(Entity):
         self.max_hp = max_hp
         self.hp = max_hp
 
-    def add_hp(self, amount: int):
+    def add_hp(self, amount: int, initiator=None):
         """
         Добавляет `amount` к текущему здоровью.
 
@@ -31,11 +31,11 @@ class LivingEntity(Entity):
         if self.hp <= 0:
             self.on_die()
 
-    def add_hp_strictly(self, amount: int):
+    def add_hp_strictly(self, amount: int, initiator=None):
         """
         То же самое, что и `add_hp()`, но HP ограничиваются параметром `max_hp`
         """
-        self.add_hp(amount)
+        self.add_hp(amount, initiator)
         self.hp = clamp(self.hp, 0, self.max_hp)
 
     def get_loot(self) -> List["Item"]:

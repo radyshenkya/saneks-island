@@ -109,12 +109,12 @@ class SplashAttackEntity(OnMapSpriteMixin):
             self.destroy()
 
 
-class WoodenSword(UsableItem):
-    NAME = 'Wooden Sword'
-    IMAGE = Sprites.SWORD_WOOD
+class BaseDamagingItem(UsableItem):
+    NAME = 'BaseDamagingItem'
+    IMAGE = Sprites.BAG
     MAX_AMOUNT = 1
     ATTACK_RANGE = 100
-    DAMAGE = 1000
+    DAMAGE = 1
 
     def use(self, initiator: Entity):
         mouse_pos = initiator.game.from_screen_to_world_point(
@@ -134,23 +134,64 @@ class WoodenSword(UsableItem):
         )
 
         for ent in attacked_entities:
-            ent.add_hp(-self.DAMAGE)
+            ent.add_hp(-self.DAMAGE, self)
 
 
-class StoneSword(UsableItem):
-    pass
+class WoodenSword(BaseDamagingItem):
+    NAME = 'Wooden Sword'
+    IMAGE = Sprites.SWORD_WOOD
+    MAX_AMOUNT = 1
+    ATTACK_RANGE = 100
+    DAMAGE = 1
 
 
-class IronSword(UsableItem):
-    pass
+class StoneSword(BaseDamagingItem):
+    NAME = 'Stone Sword'
+    IMAGE = Sprites.SWORD_STONE
+    DAMAGE = 2
 
 
-class GoldenSword(UsableItem):
-    pass
+class IronSword(BaseDamagingItem):
+    NAME = 'Iron Sword'
+    IMAGE = Sprites.SWORD_IRON
+    DAMAGE = 4
 
 
-class AmethystSword(UsableItem):
-    pass
+class GoldenSword(BaseDamagingItem):
+    NAME = 'Golden Sword'
+    IMAGE = Sprites.SWORD_GOLD
+    DAMAGE = 7
+
+
+class BasePickaxe(BaseDamagingItem):
+    """Базовый класс кирок, что бы копать камень"""
+    NAME = 'BasePickaxe'
+    IMAGE = Sprites.BAG
+    DAMAGE = 1
+
+
+class WoodenPickaxe(BasePickaxe):
+    NAME = 'Wooden Pickaxe'
+    IMAGE = Sprites.PICKAXE_WOOD
+    DAMAGE = 1
+
+
+class StonePickaxe(BasePickaxe):
+    NAME = 'Stone Pickaxe'
+    IMAGE = Sprites.PICKAXE_STONE
+    DAMAGE = 2
+
+
+class IronPickaxe(BasePickaxe):
+    NAME = 'Iron Pickaxe'
+    IMAGE = Sprites.PICKAXE_IRON
+    DAMAGE = 3
+
+
+class GoldenPickaxe(BasePickaxe):
+    NAME = 'Golden Pickaxe'
+    IMAGE = Sprites.PICKAXE_GOLD
+    DAMAGE = 5
 
 
 class Bow(UsableItem):

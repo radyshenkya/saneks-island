@@ -1,12 +1,10 @@
 from random import randint
-from typing import TYPE_CHECKING, List
+from typing import List
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2, clamp
-from entities.map import Map
 
-if TYPE_CHECKING:
-    from items import Item
-    from entities.item import ItemEntity
+from items.item import Item
+from entities.item import ItemEntity
 
 
 class LivingEntity(Entity):
@@ -50,10 +48,10 @@ class LivingEntity(Entity):
         """
         Эта функция вызывается при смерти сущности.
         По дефолту тут будут дропаться предметы из сущности, а сама сущность будет удаляться.
-        Но пока что предметов нет, как и нормального функционала у этой функции :)
         """
         # спавним лутеций жестк
         for item in self.get_loot():
             ItemEntity(self.position + Vector2(randint(-128, 128),
                        randint(-128, 128)), item)
+
         self.destroy()

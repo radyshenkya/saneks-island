@@ -26,7 +26,7 @@ if True:
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
     from entities import Chest, Workbench, Popup, ItemEntity, Player
-    from items import Wood, Iron, GoldIngot, UsableItem
+    from items import Wood, Iron, GoldIngot, UsableItem, WoodenSword
 
 RESOLUTION = (800, 800)
 FRAMERATE = 60
@@ -86,6 +86,7 @@ def main() -> None:
 
     ItemEntity(Vector2(300, 300), Chest.get_item_class()(3))
     ItemEntity(Vector2(400, 400), Workbench.get_item_class()(1))
+    ItemEntity(Vector2(500, 500), WoodenSword(1))
 
     game.camera_follow_entity(player)
 

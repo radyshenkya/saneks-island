@@ -2,18 +2,18 @@ import pygame
 from assets import FONT_PATH
 from items import Item
 from entities.ui import Popup
-from entities.util_entities import OnMapSpriteMixin
+from pygame_entities.entities.mixins import SpriteMixin
 from pygame_entities.utils.math import Vector2
 from pygame_entities.utils.drawable import SpriteWithCameraOffset
 
 
-class ItemEntity(OnMapSpriteMixin):
+class ItemEntity(SpriteMixin):
     def __init__(self, position: Vector2, item: Item) -> None:
         super().__init__(position)
 
         self._item = item
         self.sprite_init(SpriteWithCameraOffset(
-            self.item.get_image()), Vector2())
+            self.item.get_image(), 0), Vector2())
 
     @property
     def item(self) -> Item:

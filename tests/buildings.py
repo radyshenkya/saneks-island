@@ -23,8 +23,8 @@ if True:
     from pygame_entities.game import Game
     from assets import Sprites
     from entities.map import Map, SandTile, fill_map
-    from entities import Chest, Workbench, Popup, ItemEntity, Player, Stone
-    from items import Wood, Iron, GoldIngot, UsableItem, WoodenSword, WoodenPickaxe
+    from entities import Chest, Workbench, Popup, ItemEntity, Player, Stone, StoneWithIron, StoneWithCoal, StoneWithGold
+    from items import Wood, Iron, GoldIngot, UsableItem
 
 RESOLUTION = (800, 800)
 FRAMERATE = 60
@@ -88,6 +88,15 @@ def main() -> None:
     Stone(Vector2(350, 350))
     Stone(Vector2(550, 350))
     Stone(Vector2(750, 350))
+    StoneWithCoal(Vector2(350, 550))
+    StoneWithCoal(Vector2(550, 550))
+    StoneWithCoal(Vector2(750, 550))
+    StoneWithIron(Vector2(350, 750))
+    StoneWithIron(Vector2(550, 750))
+    StoneWithIron(Vector2(750, 750))
+    StoneWithGold(Vector2(350, 950))
+    StoneWithGold(Vector2(550, 950))
+    StoneWithGold(Vector2(750, 950))
 
     game.camera_follow_entity(player)
 

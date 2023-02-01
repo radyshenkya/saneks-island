@@ -168,6 +168,7 @@ class BasePickaxe(BaseDamagingItem):
     NAME = 'BasePickaxe'
     IMAGE = Sprites.BAG
     DAMAGE = 1
+    POWER = 1
 
 
 class WoodenPickaxe(BasePickaxe):
@@ -180,18 +181,21 @@ class StonePickaxe(BasePickaxe):
     NAME = 'Stone Pickaxe'
     IMAGE = Sprites.PICKAXE_STONE
     DAMAGE = 2
+    POWER = 2
 
 
 class IronPickaxe(BasePickaxe):
     NAME = 'Iron Pickaxe'
     IMAGE = Sprites.PICKAXE_IRON
     DAMAGE = 3
+    POWER = 3
 
 
 class GoldenPickaxe(BasePickaxe):
     NAME = 'Golden Pickaxe'
     IMAGE = Sprites.PICKAXE_GOLD
     DAMAGE = 5
+    POWER = 4
 
 
 class Bow(UsableItem):

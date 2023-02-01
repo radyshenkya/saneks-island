@@ -22,7 +22,6 @@ def main() -> None:
 
     # Устанавливаем дефолтную сцену
     game.set_scene(MainScene)
-
     game.run()
 
 

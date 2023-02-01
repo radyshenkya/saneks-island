@@ -242,7 +242,8 @@ class AnimatedSprite(BaseSprite):
             self._current_frame_index = (
                 self._current_frame_index + 1) % self._frames_count
 
-            self.image = self._frames[self._current_frame_index]
+            self._original_image = self._frames[self._current_frame_index]
+            self.update_image_transformation()
 
 
 class AnimatedSpriteWithCameraOffset(AnimatedSprite, SpriteWithCameraOffset):

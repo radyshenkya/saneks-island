@@ -4,6 +4,7 @@ from assets import Sprites
 from entities.util_entities import OnMapSpriteMixin
 from items.item import Item, UsableItem
 from pygame_entities.entities.entity import Entity
+from pygame_entities.entities.mixins import SpriteMixin
 from pygame_entities.utils.drawable import AnimatedSpriteWithCameraOffset
 from pygame_entities.utils.math import Vector2
 # from entities.living_entities import LivingEntity
@@ -79,7 +80,7 @@ class CookedMeat(UsableItem):
     IMAGE = Sprites.COOKED_MEAT
 
 
-class SplashAttackEntity(OnMapSpriteMixin):
+class SplashAttackEntity(SpriteMixin):
     # TODO: Нужно убрать это отсюда, но я не нашел куда
     ANIMATION_FRAMES = [
         Sprites.SPLASH_1,
@@ -97,7 +98,9 @@ class SplashAttackEntity(OnMapSpriteMixin):
         super().__init__(position)
 
         self.sprite_init(AnimatedSpriteWithCameraOffset(
-            self.ANIMATION_FRAMES, self.ANIMATION_SPEED), Vector2())
+            self.ANIMATION_FRAMES, self.ANIMATION_SPEED, 10000), Vector2())
+
+        # self.sprite.rotation = 180
 
         self.kill_timer = 0
         self.subscribe_on_update(self.kill_animation)
@@ -115,8 +118,19 @@ class BaseDamagingItem(UsableItem):
     MAX_AMOUNT = 1
     ATTACK_RANGE = 100
     DAMAGE = 1
+    COOLDOWN = 1  # in seconds
+
+    def __init__(self, amount: int) -> None:
+        super().__init__(amount)
+
+        self.last_time_used = 0
 
     def use(self, initiator: Entity):
+        if initiator.game.scene_passed_time - self.last_time_used < self.COOLDOWN:
+            return
+
+        self.last_time_used = initiator.game.scene_passed_time
+
         mouse_pos = initiator.game.from_screen_to_world_point(
             Vector2.from_tuple(pygame.mouse.get_pos()))
 
@@ -194,7 +208,7 @@ class IronPickaxe(BasePickaxe):
 class GoldenPickaxe(BasePickaxe):
     NAME = 'Golden Pickaxe'
     IMAGE = Sprites.PICKAXE_GOLD
-    DAMAGE = 5
+    DAMAGE = 4
     POWER = 4
 
 
@@ -206,6 +220,32 @@ class BaseAxe(BaseDamagingItem):
     POWER = 1
 
 
+class WoodenAxe(BaseAxe):
+    NAME = "Wooden Axe"
+    IMAGE = Sprites.AXE_WOOD
+    DAMAGE = 1
+    POWER = 1
+
+
+class StoneAxe(BaseAxe):
+    NAME = "Stone Axe"
+    IMAGE = Sprites.AXE_STONE
+    DAMAGE = 2
+    POWER = 2
+
+
+class IronAxe(BaseAxe):
+    NAME = "Iron Axe"
+    IMAGE = Sprites.AXE_IRON
+    DAMAGE = 4
+    POWER = 3
+
+
+class GoldenAxe(BaseAxe):
+    NAME = "Golden Axe"
+    IMAGE = Sprites.AXE_GOLD
+    DAMAGE = 5
+    POWER = 4
 
 
 class Bow(UsableItem):

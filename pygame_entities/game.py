@@ -77,11 +77,17 @@ class Game:
         # for scenes
         self._current_scene = BaseScene
         self._current_scene.on_load(self)
+        self._scene_time_counter = 0
+
+    @property
+    def scene_passed_time(self) -> float:
+        return self._scene_time_counter
 
     def set_scene(self, new_scene: BaseScene):
         """Set current scene class"""
         self._current_scene.on_end(self)
         self._current_scene = new_scene
+        self._scene_time_counter = 0
         self._current_scene.on_load(self)
 
     def reload_scene(self):
@@ -189,6 +195,7 @@ class Game:
             self._sprites.draw(self._screen)
             pygame.display.flip()
             self.delta_time = self._clock.tick(self.framerate) / 1000
+            self._scene_time_counter += self.delta_time
 
         self._current_scene.on_end(self)
 

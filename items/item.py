@@ -1,5 +1,6 @@
 import pygame
 from pygame_entities.entities.entity import Entity
+from pygame_entities.entities.mixins import SpriteMixin
 from pygame_entities.utils.math import Vector2
 
 

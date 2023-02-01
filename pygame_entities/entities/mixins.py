@@ -239,7 +239,7 @@ class MouseEventMixin(CollisionMixin):
         """
         Initializing this mixin
         """
-        
+
         self._on_mouse_down = list()
         self._on_mouse_up = list()
         self._on_mouse_motion = list()

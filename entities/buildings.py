@@ -7,7 +7,7 @@ from assets import FONT_PATH, Sprites
 from entities.building import Building
 from entities.item import ItemEntity
 from entities.ui import ActionsPanel, Popup
-from items.items import BasePickaxe, Coal, Gold, GoldIngot, GoldenPickaxe, GoldenSword, Iron, IronIngot, IronPickaxe, IronSword, Rock, Wood, WoodenPickaxe, WoodenSword, StoneSword, StonePickaxe
+from items.items import BaseAxe, BasePickaxe, Coal, Gold, GoldIngot, GoldenAxe, GoldenPickaxe, GoldenSword, Iron, IronAxe, IronIngot, IronPickaxe, IronSword, Rock, StoneAxe, Wood, WoodenAxe, WoodenPickaxe, WoodenSword, StoneSword, StonePickaxe
 from items.recipes import Recipe
 from items.inventory import Inventory
 from items.item import Item
@@ -20,12 +20,16 @@ BUILDINGS_ITEMS_PICKUP_RADIUS = 128
 WORKBENCH_RECIPES = [
     Recipe("Wooden Pickaxe", {Wood: 3}, {WoodenPickaxe: 1}),
     Recipe("Wooden Sword", {Wood: 3}, {WoodenSword: 1}),
+    Recipe("Wooden Axe", {Wood: 3}, {WoodenAxe: 1}),
     Recipe("Stone Pickaxe", {Wood: 1, Rock: 2}, {StonePickaxe: 1}),
     Recipe("Stone Sword", {Wood: 1, Rock: 2}, {StoneSword: 1}),
+    Recipe("Stone Axe", {Wood: 1, Rock: 2}, {StoneAxe: 1}),
     Recipe("Iron Pickaxe", {Wood: 1, IronIngot: 2}, {IronPickaxe: 1}),
     Recipe("Iron Sword", {Wood: 1, IronIngot: 2}, {IronSword: 1}),
+    Recipe("Iron Axe", {Wood: 1, IronIngot: 2}, {IronAxe: 1}),
     Recipe("Golden Pickaxe", {Wood: 1, GoldIngot: 2}, {GoldenPickaxe: 1}),
     Recipe("Golden Sword", {Wood: 1, GoldIngot: 2}, {GoldenSword: 1}),
+    Recipe("Golden Axe", {Wood: 1, GoldIngot: 2}, {GoldenAxe: 1})
 ]
 
 FURNACE_RECIPES = [
@@ -38,9 +42,11 @@ class Chest(Building):
     """Сущность сундука"""
     IMAGE = Sprites.CHEST
     NAME = "Chest"
-    HP = 1000
+    HP = 5
     IS_TRIGGER = False
     IS_USABLE = True
+
+    ON_HURT_PARTICLE_IMAGE = Sprites.WOOD_PARTICLE
 
     SLOT_COUNT = 10
     ITEMS_PICKUP_RADIUS = BUILDINGS_ITEMS_PICKUP_RADIUS
@@ -88,12 +94,32 @@ WORKBENCH_RECIPES.append(
     Recipe("Chest", {Wood: 1, IronIngot: 1}, {Chest.get_item_class(): 1}))
 
 
+class WoodenCrate(Building):
+    """Коробка. Просто коробка"""
+
+    IMAGE = Sprites.CRATE_WOOD
+    NAME = "Wooden Crate"
+    HP = 20
+
+    IS_USABLE = False
+    IS_TRIGGER = False
+
+    ON_HURT_PARTICLE_IMAGE = Sprites.WOOD_PARTICLE
+
+
+WORKBENCH_RECIPES.append(
+    Recipe('Wooden Crate', {Wood: 5}, {WoodenCrate.get_item_class(): 1})
+)
+
+
 class Workbench(Building):
     """Верстак. Так же от него можно наследовать другие строения для крафтов."""
 
     IMAGE = Sprites.WORKBENCH
     NAME = "Workbench"
-    HP = 1000
+    HP = 5
+
+    ON_HURT_PARTICLE_IMAGE = Sprites.WOOD_PARTICLE
 
     IS_TRIGGER = False
     IS_USABLE = True
@@ -141,6 +167,17 @@ class Workbench(Building):
                 ]
 
 
+class BasicWorkbench(Workbench):
+    """Базовый стол крафта, что бы можно было скрафтить верстак"""
+    IMAGE = Sprites.WOOD_LOG_LAYING
+    NAME = 'Crafting Log'
+    ITEMS_PICKUP_RADIUS = BUILDINGS_ITEMS_PICKUP_RADIUS
+    HP = 1
+    RECIPES = [
+        Recipe('Workbench', {Wood: 3}, {Workbench.get_item_class(): 1})
+    ]
+
+
 class Furnace(Workbench):
     IMAGE = Sprites.FURNACE
     NAME = 'Furnace'
@@ -148,9 +185,45 @@ class Furnace(Workbench):
     RECIPES = FURNACE_RECIPES
     IS_TRIGGER = False
 
+    ON_HURT_PARTICLE_IMAGE = Sprites.STONE_PARTICLE
+
 
 WORKBENCH_RECIPES.append(
     Recipe("Furnace", {Rock: 5}, {Furnace.get_item_class(): 1}))
+
+
+# NATURAL BUILDINGS
+
+
+class Tree(Building):
+    """Дерево"""
+    IMAGE = Sprites.PALMTREE_2
+    NAME = "Palm Tree"
+    HP = 5
+
+    ON_HURT_PARTICLE_IMAGE = Sprites.WOOD_PARTICLE
+
+    IS_TRIGGER = False
+    IS_USABLE = False
+
+    MIN_AXE_POWER = 1
+
+    # Включаем урон только от кирки
+    def add_hp(self, hp: int, initiator: Entity):
+        if not isinstance(initiator, BaseAxe):
+            return
+
+        if initiator.POWER < self.MIN_AXE_POWER:
+            return
+
+        super().add_hp(hp)
+
+    def get_loot(self) -> List["Item"]:
+        return [
+            Wood(1) for _ in range(randint(1, 6))
+        ] + [
+            BasicWorkbench.get_item_class()(1) for _ in range(randint(0, 1))
+        ]
 
 
 class Stone(Building):
@@ -158,6 +231,8 @@ class Stone(Building):
     IMAGE = Sprites.STONE
     NAME = "Stone"
     HP = 5
+
+    ON_HURT_PARTICLE_IMAGE = Sprites.STONE_PARTICLE
 
     IS_TRIGGER = False
     IS_USABLE = False

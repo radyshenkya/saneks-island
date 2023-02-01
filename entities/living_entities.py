@@ -1,6 +1,7 @@
 from random import randint
 from typing import List
-from pygame_entities.entities.entity import Entity
+from assets import Sprites
+from pygame_entities.entities import Entity, ParticleSystem
 from pygame_entities.utils.math import Vector2, clamp
 
 from items.item import Item
@@ -12,10 +13,20 @@ class LivingEntity(Entity):
     Живая сущность. У нее есть здоровье (HP), которое можно изменять. Так же она может умереть, если HP будут равны 0.
     """
 
+    ON_HURT_PARTICLE_IMAGE = Sprites.BLOOD_PARTICLE
+    ON_HURT_PARTICLE_COUNT = 10
+
     def __init__(self, position: Vector2, max_hp: int) -> None:
         super().__init__(position)
         self.max_hp = max_hp
         self.hp = max_hp
+        self.hurt_particle_system = ParticleSystem(
+            self.position,
+            self.ON_HURT_PARTICLE_IMAGE,
+            2,
+            min_particle_velocity=Vector2(-8, -8),
+            max_particle_velocity=Vector2(8, 8)
+        )
 
     def add_hp(self, amount: int, initiator=None):
         """
@@ -23,6 +34,9 @@ class LivingEntity(Entity):
 
         Если после добавления `amount` здоровье стало меньше или равно нулю, то вызывается метод `on_die()`
         """
+
+        self.hurt_particle_system.burst(self.ON_HURT_PARTICLE_COUNT)
+
         self.set_hp(self.hp + amount)
 
     def set_hp(self, amount: int):

@@ -87,12 +87,21 @@ class Sprites:
     PICKAXE_STONE = SPRITESHEET.image_at((2, 5))
     PICKAXE_WOOD = SPRITESHEET.image_at((3, 5))
 
+    AXE_GOLD = SPRITESHEET.image_at((0, 6))
+    AXE_IRON = SPRITESHEET.image_at((1, 6))
+    AXE_STONE = SPRITESHEET.image_at((2, 6))
+    AXE_WOOD = SPRITESHEET.image_at((3, 6))
+
+    WOOD_PARTICLE = SPRITESHEET.image_at((4, 6))
+    BLOOD_PARTICLE = SPRITESHEET.image_at((5, 6))
+    STONE_PARTICLE = SPRITESHEET.image_at((6, 6))
+
+    CRATE_WOOD = SPRITESHEET.image_at((7, 6))
+
     SWORD_GOLD = SPRITESHEET.image_at((4, 5))
     SWORD_IRON = SPRITESHEET.image_at((5, 5))
     SWORD_STONE = SPRITESHEET.image_at((6, 5))
     SWORD_WOOD = SPRITESHEET.image_at((7, 5))
-
-    CRATE = SPRITESHEET.image_at((7, 6))
 
     COOKED_MEAT = SPRITESHEET.image_at((8, 6))
     RAW_MEAT = SPRITESHEET.image_at((9, 6))
@@ -106,7 +115,7 @@ class Sprites:
 
     PIE = SPRITESHEET.image_at((11, 0))
 
-    BLOODPARTICLE = SPRITESHEET.image_at((8, 3))
+    WOOD_LOG_LAYING = SPRITESHEET.image_at((8, 3))
 
     PLAYER_FRONT_1 = SPRITESHEET.image_at((10, 1))
     PLAYER_FRONT_2 = SPRITESHEET.image_at((10, 2))
@@ -144,8 +153,8 @@ class Sprites:
     BUSH_WITH_BERRIES = SPRITESHEET.image_at((14, 0))
 
     PALMTREE_1 = SPRITESHEET.image_at((12, 0))
-    PALMTREE_2 = SPRITESHEET.image_at((15, 0), (1, 2))
-    PALMTREE_3 = SPRITESHEET.image_at((16, 0), (1, 2))
+    PALMTREE_2 = SPRITESHEET.image_at((15, 0), (2, 2))
+    PALMTREE_3 = SPRITESHEET.image_at((17, 0), (2, 2))
 
 
 FONT_PATH = "assets/fonts/font.ttf"

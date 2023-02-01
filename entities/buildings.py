@@ -39,7 +39,7 @@ class Chest(Building):
     IMAGE = Sprites.CHEST
     NAME = "Chest"
     HP = 1000
-    IS_TRIGGER = True
+    IS_TRIGGER = False
     IS_USABLE = True
 
     SLOT_COUNT = 10
@@ -95,7 +95,7 @@ class Workbench(Building):
     NAME = "Workbench"
     HP = 1000
 
-    IS_TRIGGER = True
+    IS_TRIGGER = False
     IS_USABLE = True
 
     ITEMS_PICKUP_RADIUS = BUILDINGS_ITEMS_PICKUP_RADIUS

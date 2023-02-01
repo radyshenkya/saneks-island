@@ -10,6 +10,7 @@ if TYPE_CHECKING:
     from .entities.entity import Entity
     from .utils.drawable import BaseSprite
 from .utils.math import Vector2
+from .scenes import BaseScene
 
 import pygame
 
@@ -72,6 +73,25 @@ class Game:
         self._subscribed_events: Dict[int,
                                       Dict[int, FunctionType]] = dict()
         self._subscribers_counter = 0
+
+        # for scenes
+        self._current_scene = BaseScene
+        self._current_scene.on_load(self)
+
+    def set_scene(self, new_scene: BaseScene):
+        """Set current scene class"""
+        self._current_scene.on_end(self)
+        self._current_scene = new_scene
+        self._current_scene.on_load(self)
+
+    def reload_scene(self):
+        self.set_scene(self._current_scene)
+
+    def destroy_all_unpersistent_entities(self):
+        [ent.destroy() for ent in filter(lambda x: not x.IS_PERSISTENT,
+                                         self.enabled_entities)]
+        [ent.destroy() for ent in filter(lambda x: not x.IS_PERSISTENT,
+                                         self.disabled_entities)]
 
     @property
     def screen(self) -> pygame.Surface:
@@ -169,6 +189,8 @@ class Game:
             self._sprites.draw(self._screen)
             pygame.display.flip()
             self.delta_time = self._clock.tick(self.framerate) / 1000
+
+        self._current_scene.on_end(self)
 
     def _update_entities(self):
         """

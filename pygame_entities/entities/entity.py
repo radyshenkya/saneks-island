@@ -17,6 +17,9 @@ class Entity:
     Every entity in your game must be inherited from this class
     """
 
+    # Is destroys on scene unloading?
+    IS_PERSISTENT = False
+
     def __init__(self, position: Vector2) -> None:
         """
         Initializing new entity.

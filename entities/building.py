@@ -43,7 +43,7 @@ class Building(LivingEntity, OnMapSpriteMixin, CollisionMixin):
         self.sprite_init(SpriteWithCameraOffset(self.IMAGE), Vector2())
 
         self.collision_init(Vector2.from_tuple(
-            self.IMAGE.get_size()) / 2, self.IS_TRIGGER, self.IS_USABLE)
+            self.IMAGE.get_size()) / 4, self.IS_TRIGGER, self.IS_USABLE)
 
     def use(self, initiator: Entity):
         raise NotImplementedError("Building's use() needs to be implemented")

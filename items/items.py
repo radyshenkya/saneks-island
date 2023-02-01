@@ -198,5 +198,15 @@ class GoldenPickaxe(BasePickaxe):
     POWER = 4
 
 
+class BaseAxe(BaseDamagingItem):
+    """Базовый класс топоров, что бы рубить дерево"""
+    NAME = 'BaseAxe'
+    IMAGE = Sprites.BAG
+    DAMAGE = 1
+    POWER = 1
+
+
+
+
 class Bow(UsableItem):
     pass

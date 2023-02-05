@@ -19,6 +19,8 @@ isExist = os.path.exists(SAVES_FOLDER)
 if not isExist:
     os.makedirs(SAVES_FOLDER)
 
+# FIXME: плеер не сбрасывается...
+
 
 class GameGenerationScene(BaseScene):
     """Здесь генерируется игра, и сохраняется в файл"""
@@ -119,17 +121,12 @@ class GameGenerationScene(BaseScene):
 
     @classmethod
     def on_load(cls, game: Game):
-        # Создаем карту размерами 100x100 тайлов, с чанками 10x10
         cls.MAP = Map(Vector2(), cls.CHUNK_SIZE, cls.MAP_SIZE, SandTile)
-
-        # Генерируем карту
-        fill_map(cls.MAP, 1)
 
         player = Player(cls.MAP.get_map_size() / 2)
         ItemEntity(player.position, WoodenAxe(1))
         ItemEntity(player.position, WoodenCrate.get_item_class()(5))
         cls.spawn_buildings(game)
-        del player
 
         saved_json = cls.dump_to_json(game)
 

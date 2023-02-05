@@ -1,7 +1,9 @@
-import pygame
-pygame.init()
-from pygame_entities.game import Game
 from scenes import MainScene
+from pygame_entities.game import Game
+import pygame
+
+from scenes.new_game import NewGameScene
+pygame.init()
 
 
 RESOLUTION = (1200, 1000)
@@ -13,6 +15,8 @@ def on_quit_event(event: pygame.event.Event):
     """
     Нужна для выхода из игры по крестику окна.
     """
+
+    # Game.get_instance()._current_scene.dump_to_json(Game.get_instance())
     Game.get_instance().running = False
 
 
@@ -21,7 +25,7 @@ def main() -> None:
     game.subscribe_for_event(on_quit_event, pygame.QUIT)
 
     # Устанавливаем дефолтную сцену
-    game.set_scene(MainScene)
+    game.set_scene(NewGameScene)
     game.run()
 
 

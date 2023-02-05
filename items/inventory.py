@@ -1,7 +1,9 @@
 import pickle
+from entities.json_parser import json_dict_into_object, register_json
 from items.item import Item
 
 
+@register_json
 class Inventory:
     def __init__(self, slots_count: int = 10) -> None:
         self.slots = slots_count
@@ -52,3 +54,15 @@ class Inventory:
         previous_item = self.get_slot(slot_index)
         self.set_slot(item, slot_index)
         return previous_item
+
+    def to_json(self) -> dict:
+        return {'type': self.__class__.__name__, 'slots_count': self.slots, 'slots': [el.to_json() for el in self.grid if not el is None]}
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Inventory":
+        new_inv = cls(json_dict['slots_count'])
+
+        for item in json_dict['slots']:
+            new_inv.add_item(json_dict_into_object(item))
+
+        return new_inv

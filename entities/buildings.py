@@ -6,6 +6,7 @@ import pygame
 from assets import SPRITE_SIZE, Sprites, FONT_30 as FONT
 from entities.building import Building
 from entities.item import ItemEntity
+from entities.json_parser import json_dict_into_object, register_json
 from entities.ui import ActionsPanel, Popup
 from items.items import BaseAxe, BasePickaxe, Coal, Gold, GoldIngot, GoldenAxe, GoldenPickaxe, GoldenSword, Iron, IronAxe, IronIngot, IronPickaxe, IronSword, Rock, StoneAxe, Wood, WoodenAxe, WoodenPickaxe, WoodenSword, StoneSword, StonePickaxe
 from items.recipes import Recipe
@@ -37,6 +38,7 @@ FURNACE_RECIPES = [
 ]
 
 
+@register_json
 class Chest(Building):
     """Сущность сундука"""
     IMAGE = Sprites.CHEST
@@ -88,11 +90,28 @@ class Chest(Building):
     def get_loot(self) -> List["Item"]:
         return super().get_loot() + list(filter(lambda x: not x is None, self.inventory.grid))
 
+    def to_json(self) -> dict:
+        jsoned = super().to_json()
+        jsoned['inventory'] = self.inventory.to_json()
+
+        return jsoned
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Chest":
+        new_chest: "Chest" = super().from_json(json_dict)
+        new_chest.inventory = json_dict_into_object(json_dict['inventory'])
+
+        return new_chest
+
+
+register_json(Chest.get_item_class())
+
 
 WORKBENCH_RECIPES.append(
     Recipe("Chest", {Wood: 1, IronIngot: 1}, {Chest.get_item_class(): 1}))
 
 
+@register_json
 class WoodenCrate(Building):
     """Коробка. Просто коробка"""
 
@@ -110,7 +129,10 @@ WORKBENCH_RECIPES.append(
     Recipe('Wooden Crate', {Wood: 5}, {WoodenCrate.get_item_class(): 1})
 )
 
+register_json(WoodenCrate.get_item_class())
 
+
+@register_json
 class Workbench(Building):
     """Верстак. Так же от него можно наследовать другие строения для крафтов."""
 
@@ -166,6 +188,10 @@ class Workbench(Building):
                 ]
 
 
+register_json(Workbench.get_item_class())
+
+
+@register_json
 class BasicWorkbench(Workbench):
     """Базовый стол крафта, что бы можно было скрафтить верстак"""
     IMAGE = Sprites.WOOD_LOG_LAYING
@@ -178,6 +204,10 @@ class BasicWorkbench(Workbench):
     ]
 
 
+register_json(BasicWorkbench.get_item_class())
+
+
+@register_json
 class Furnace(Workbench):
     IMAGE = Sprites.FURNACE
     NAME = 'Furnace'
@@ -188,13 +218,16 @@ class Furnace(Workbench):
     ON_HURT_PARTICLE_IMAGE = Sprites.STONE_PARTICLE
 
 
+register_json(Furnace.get_item_class())
+
+
 WORKBENCH_RECIPES.append(
     Recipe("Furnace", {Rock: 5}, {Furnace.get_item_class(): 1}))
 
 
 # NATURAL BUILDINGS
 
-
+@register_json
 class Tree(Building):
     """Дерево"""
     IMAGE = Sprites.PALMTREE_2
@@ -228,6 +261,7 @@ class Tree(Building):
         ]
 
 
+@register_json
 class Stone(Building):
     """Камень"""
     IMAGE = Sprites.STONE
@@ -257,6 +291,7 @@ class Stone(Building):
         ]
 
 
+@register_json
 class StoneWithIron(Stone):
     IMAGE = Sprites.STONE_WITH_IRON_2
     NAME = "Stone with Iron"
@@ -271,6 +306,7 @@ class StoneWithIron(Stone):
         ]
 
 
+@register_json
 class StoneWithGold(Stone):
     IMAGE = Sprites.STONE_WITH_GOLD
     NAME = "Stone with Gold"
@@ -285,6 +321,7 @@ class StoneWithGold(Stone):
         ]
 
 
+@register_json
 class StoneWithCoal(Stone):
     IMAGE = Sprites.STONE_WITH_COAL
     NAME = "Stone with Coal"

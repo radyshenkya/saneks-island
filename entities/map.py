@@ -2,6 +2,7 @@ from typing import List, Tuple
 from random import choices, choice
 
 from assets import Sprites, SPRITE_SIZE
+from entities.json_parser import register_json
 
 from pygame_entities.game import Game
 from pygame_entities.entities.mixins import CollisionMixin
@@ -154,6 +155,7 @@ class MapBorder(CollisionMixin):
         self.collision_init(collider_size)
 
 
+@register_json
 class Map(Entity):
     """
     Сущность тайловой карты.
@@ -186,6 +188,7 @@ class Map(Entity):
 
         self.subscribe_on_update(self.render_chunks)
         self.subscribe_on_destroy(self.destroy_borders)
+        self.subscribe_on_destroy(self.kill_all_tiles)
 
     def render_chunks(self, delta_time: float):
         """
@@ -251,6 +254,22 @@ class Map(Entity):
         self.left_border.destroy()
         self.top_border.destroy()
         self.bottom_border.destroy()
+
+    def kill_all_tiles(self):
+        for row in self.chunks:
+            for chunk in row:
+                [el.kill() for el in chunk.sprites]
+
+    def to_json(self) -> dict:
+        return {'type': self.__class__.__name__, 'position': self.position.get_tuple(), 'chunk_size': self.chunk_size, 'map_size': self.map_size}
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Map":
+        new_map = cls(Vector2.from_tuple(
+            json_dict['position']), json_dict['chunk_size'], json_dict['map_size'], SandTile)
+
+        fill_map(new_map, 0)
+        return new_map
 
 
 def fill_map(map: Map, seed: int, noise_multiplier=0.1):

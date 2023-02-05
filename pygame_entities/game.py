@@ -85,10 +85,14 @@ class Game:
 
     def set_scene(self, new_scene: BaseScene):
         """Set current scene class"""
-        self._current_scene.on_end(self)
+        self.end_scene()
         self._current_scene = new_scene
         self._scene_time_counter = 0
         self._current_scene.on_load(self)
+
+    def end_scene(self):
+        self._current_scene.on_end(self)
+        self.destroy_all_unpersistent_entities()
 
     def reload_scene(self):
         self.set_scene(self._current_scene)

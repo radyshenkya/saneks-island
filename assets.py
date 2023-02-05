@@ -3,6 +3,7 @@ from pygame.transform import scale
 from pygame.image import load
 
 import pygame
+pygame.init()
 
 SPRITESHEET_PATH = "assets/sprites/spritesheet.png"
 

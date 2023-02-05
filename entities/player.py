@@ -5,6 +5,7 @@ from functools import partial
 from typing import List
 from entities.building import Building
 from entities.item import ItemEntity
+from entities.json_parser import json_dict_into_object, register_json
 from entities.living_entities import LivingEntity
 from entities.ui import UI_LAYER, Button, Image, UIElementsContainer, ActionsPanel
 from entities.util_entities import OnMapSpriteMixin
@@ -20,6 +21,7 @@ from pygame_entities.entities.mixins import BlockingCollisionMixin, VelocityMixi
 import pygame
 
 
+@register_json
 class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMixin):
     FRONT_IDLE_ANIM = [Sprites.PLAYER_FRONT_1]
     FRONT_MOVE_ANIM = [Sprites.PLAYER_FRONT_1, Sprites.PLAYER_FRONT_2,
@@ -189,6 +191,15 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
         super().on_die()
 
         self.inventory = Inventory(self.INVENTORY_SLOTS_COUNT)
+
+    def to_json(self) -> dict:
+        return {'type': self.__class__.__name__, 'position': self.position.get_tuple(), 'inventory': self.inventory.to_json()}
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Player":
+        player = cls(Vector2.from_tuple(json_dict['position']))
+        player.inventory = json_dict_into_object(json_dict['inventory'])
+        return player
 
 
 # за такую реализацию убить мало, но как бы другие фичи проекта до 19 сами себя не сделают, поэтому как то так

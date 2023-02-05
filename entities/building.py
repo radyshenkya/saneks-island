@@ -72,12 +72,21 @@ class Building(LivingEntity, OnMapSpriteMixin, CollisionMixin):
     def use(self, initiator: Entity):
         raise NotImplementedError("Building's use() needs to be implemented")
 
-    @ classmethod
+    @classmethod
     def get_item_class(cls) -> BuildingItem:
         class NewBuildingItem(BuildingItem):
             BUILDING = cls
 
+        NewBuildingItem.__name__ = cls.__name__ + "Item"
         return NewBuildingItem
 
     def get_loot(self) -> List["Item"]:
         return [self.get_item_class()(1)]
+
+    def to_json(self) -> dict:
+        return {'type': self.__class__.__name__, 'position': self.position.get_tuple()}
+
+    @classmethod
+    def from_json(cls, json_dict: dict) -> "Building":
+        pos = Vector2.from_tuple(json_dict['position'])
+        return cls(pos)

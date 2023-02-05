@@ -1,116 +1,48 @@
-from random import choice, randint
-from entities.buildings import Stone, StoneWithCoal, StoneWithGold, StoneWithIron, Tree, WoodenCrate
-from entities.building import snap_position_to_grid
-from entities.item import ItemEntity
-from entities.map import Map, SandTile, fill_map
+from json import loads, dumps
+from entities.json_parser import json_dict_into_object
 from entities.player import Player
-from items.items import Rock, Wood, WoodenAxe
 from pygame_entities.game import Game
 from pygame_entities.scenes import BaseScene
-from pygame_entities.utils.math import Vector2
+from entities.json_parser import registered_classes
 
 
 class MainScene(BaseScene):
     """Сцена самой игры как бы да ок"""
 
-    CHUNK_SIZE = (10, 10)
-    MAP_SIZE = (6, 6)
-
-    BUILDINGS_COUNT = 80
-    NATURAL_BUILDINGS = [
-        Tree
-    ]
-    ITEMS_COUNT = 100
-    NATURAL_ITEMS = [
-        Wood, Rock
-    ]
-
-    MAP = None
+    FILE_TO_LOAD = "./saves/unknown_game"
+    NEEDS_TO_BE_LOADED = True
 
     @classmethod
-    def spawn_stones(cls, game: Game):
-        STONE_CLUSTERS = 15
-        MAX_STONE_SPAWN_OFFSET = 1000
-        MIN_STONES_IN_CLUSTERS = 1
-        MAX_STONES_IN_CLUSTERS = 7
-        STONES = [
-            Stone,
-            StoneWithCoal,
-            StoneWithGold,
-            StoneWithIron
-        ]
+    def dump_to_json(cls, game: Game) -> str:
+        json_dict = {'entities': []}
 
-        # Choosing cluster
-        pos_constraint = cls.MAP.get_map_size().get_integer_tuple()
+        for ent in game.enabled_entities:
+            if ent.__class__.__name__ not in registered_classes.keys():
+                continue
 
-        for cluster_i in range(STONE_CLUSTERS):
-            stone = choice(STONES)
-            cluster_pos = Vector2(
-                randint(200, pos_constraint[0] -
-                        MAX_STONE_SPAWN_OFFSET),
-                randint(200, pos_constraint[1] -
-                        MAX_STONE_SPAWN_OFFSET)
-            )
+            json_dict['entities'].append(ent.to_json())
 
-            stones_in_cluster = randint(
-                MIN_STONES_IN_CLUSTERS, MAX_STONES_IN_CLUSTERS)
-
-            for i in range(stones_in_cluster):
-                stone(snap_position_to_grid(cluster_pos + Vector2.from_tuple(
-                    (
-                        randint(0,
-                                MAX_STONE_SPAWN_OFFSET),
-                        randint(0,
-                                MAX_STONE_SPAWN_OFFSET)
-                    )
-                ))
-                )
-
-    @classmethod
-    def spawn_buildings(cls, game: Game):
-        pos_constraint = cls.MAP.get_map_size().get_integer_tuple()
-
-        cls.spawn_stones(game)
-
-        for _ in range(cls.BUILDINGS_COUNT):
-            building_class = choice(cls.NATURAL_BUILDINGS)
-            pos = Vector2(
-                randint(100, pos_constraint[0]),
-                randint(100, pos_constraint[1])
-            )
-
-            building_class(snap_position_to_grid(pos))
-
-    @classmethod
-    def spawn_items(cls, game: Game):
-        pos_constraint = cls.MAP.get_map_size().get_integer_tuple()
-
-        for _ in range(cls.ITEMS_COUNT):
-            item_class = choice(cls.NATURAL_ITEMS)
-            pos = Vector2(
-                randint(100, pos_constraint[0]),
-                randint(100, pos_constraint[1])
-            )
-
-            ItemEntity(pos, item_class(1))
+        return dumps(json_dict)
 
     @classmethod
     def on_load(cls, game: Game):
-        # Создаем карту размерами 100x100 тайлов, с чанками 10x10
-        cls.MAP = Map(Vector2(), cls.CHUNK_SIZE, cls.MAP_SIZE, SandTile)
 
-        # Генерируем карту
-        fill_map(cls.MAP, 1)
+        if cls.NEEDS_TO_BE_LOADED:
+            json_dict = None
 
-        player = Player(cls.MAP.get_map_size() / 2)
-        ItemEntity(player.position, WoodenAxe(1))
-        ItemEntity(player.position, WoodenCrate.get_item_class()(5))
-        game.camera_follow_entity(player)
+            with open(cls.FILE_TO_LOAD, 'r') as f:
+                json_dict = loads(f.read())
 
-        cls.spawn_buildings(game)
+            for ent_dict in json_dict['entities']:
+                ent = json_dict_into_object(ent_dict)
 
-        game.run()
+                if isinstance(ent, Player):
+                    game.camera_follow_entity(ent)
 
     @classmethod
     def on_end(cls, game: Game):
-        pass
+        saved_json = cls.dump_to_json(game)
+
+        with open(f'{cls.FILE_TO_LOAD}', 'w', encoding='utf-8') as f:
+            f.write(saved_json)
+            f.flush()

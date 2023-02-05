@@ -1,6 +1,7 @@
 from typing import TYPE_CHECKING
 import pygame
 from assets import Sprites
+from entities.json_parser import register_json
 from entities.util_entities import OnMapSpriteMixin
 from items.item import Item, UsableItem
 from pygame_entities.entities.entity import Entity
@@ -10,71 +11,85 @@ from pygame_entities.utils.math import Vector2
 # from entities.living_entities import LivingEntity
 
 
+@register_json
 class Wood(Item):
     NAME = 'Wood'
     IMAGE = Sprites.WOOD
 
 
+@register_json
 class Leaves(Item):
     NAME = 'Leaves'
     IMAGE = Sprites.LEAVES
 
 
+@register_json
 class Rock(Item):
     NAME = 'Rock'
     IMAGE = Sprites.ROCK
 
 
+@register_json
 class Coal(Item):
     NAME = 'Coal'
     IMAGE = Sprites.COAL
 
 
+@register_json
 class Iron(Item):
     NAME = 'Iron'
     IMAGE = Sprites.IRON
 
 
+@register_json
 class Gold(Item):
     NAME = 'Gold'
     IMAGE = Sprites.GOLD
 
 
+@register_json
 class IronIngot(Item):
     NAME = 'Iron Ingot'
     IMAGE = Sprites.IRON_INGOT
 
 
+@register_json
 class GoldIngot(Item):
     NAME = 'Gold Ingot'
     IMAGE = Sprites.GOLD_INGOT
 
 
+@register_json
 class Amethyst(Item):
     NAME = 'Amethyst'
     IMAGE = Sprites.AMETHYST
 
 
+@register_json
 class Feather(Item):
     NAME = 'Feather'
     IMAGE = Sprites.BAG  # TODO: add image
 
 
+@register_json
 class String(Item):
     NAME = 'String'
     IMAGE = Sprites.STRING
 
 
+@register_json
 class Arrow(Item):
     NAME = 'Arrow'
     IMAGE = Sprites.BAG  # TODO: add image
 
 
+@register_json
 class RawMeat(UsableItem):
     NAME = 'Raw Meat'
     IMAGE = Sprites.RAW_MEAT
 
 
+@register_json
 class CookedMeat(UsableItem):
     NAME = 'Cooked Meat'
     IMAGE = Sprites.COOKED_MEAT
@@ -151,6 +166,7 @@ class BaseDamagingItem(UsableItem):
             ent.add_hp(-self.DAMAGE, self)
 
 
+@register_json
 class WoodenSword(BaseDamagingItem):
     NAME = 'Wooden Sword'
     IMAGE = Sprites.SWORD_WOOD
@@ -159,24 +175,28 @@ class WoodenSword(BaseDamagingItem):
     DAMAGE = 1
 
 
+@register_json
 class StoneSword(BaseDamagingItem):
     NAME = 'Stone Sword'
     IMAGE = Sprites.SWORD_STONE
     DAMAGE = 2
 
 
+@register_json
 class IronSword(BaseDamagingItem):
     NAME = 'Iron Sword'
     IMAGE = Sprites.SWORD_IRON
     DAMAGE = 4
 
 
+@register_json
 class GoldenSword(BaseDamagingItem):
     NAME = 'Golden Sword'
     IMAGE = Sprites.SWORD_GOLD
     DAMAGE = 7
 
 
+@register_json
 class BasePickaxe(BaseDamagingItem):
     """Базовый класс кирок, что бы копать камень"""
     NAME = 'BasePickaxe'
@@ -185,12 +205,14 @@ class BasePickaxe(BaseDamagingItem):
     POWER = 1
 
 
+@register_json
 class WoodenPickaxe(BasePickaxe):
     NAME = 'Wooden Pickaxe'
     IMAGE = Sprites.PICKAXE_WOOD
     DAMAGE = 1
 
 
+@register_json
 class StonePickaxe(BasePickaxe):
     NAME = 'Stone Pickaxe'
     IMAGE = Sprites.PICKAXE_STONE
@@ -198,6 +220,7 @@ class StonePickaxe(BasePickaxe):
     POWER = 2
 
 
+@register_json
 class IronPickaxe(BasePickaxe):
     NAME = 'Iron Pickaxe'
     IMAGE = Sprites.PICKAXE_IRON
@@ -205,6 +228,7 @@ class IronPickaxe(BasePickaxe):
     POWER = 3
 
 
+@register_json
 class GoldenPickaxe(BasePickaxe):
     NAME = 'Golden Pickaxe'
     IMAGE = Sprites.PICKAXE_GOLD
@@ -212,6 +236,7 @@ class GoldenPickaxe(BasePickaxe):
     POWER = 4
 
 
+@register_json
 class BaseAxe(BaseDamagingItem):
     """Базовый класс топоров, что бы рубить дерево"""
     NAME = 'BaseAxe'
@@ -220,6 +245,7 @@ class BaseAxe(BaseDamagingItem):
     POWER = 1
 
 
+@register_json
 class WoodenAxe(BaseAxe):
     NAME = "Wooden Axe"
     IMAGE = Sprites.AXE_WOOD
@@ -227,6 +253,7 @@ class WoodenAxe(BaseAxe):
     POWER = 1
 
 
+@register_json
 class StoneAxe(BaseAxe):
     NAME = "Stone Axe"
     IMAGE = Sprites.AXE_STONE
@@ -234,6 +261,7 @@ class StoneAxe(BaseAxe):
     POWER = 2
 
 
+@register_json
 class IronAxe(BaseAxe):
     NAME = "Iron Axe"
     IMAGE = Sprites.AXE_IRON
@@ -241,6 +269,7 @@ class IronAxe(BaseAxe):
     POWER = 3
 
 
+@register_json
 class GoldenAxe(BaseAxe):
     NAME = "Golden Axe"
     IMAGE = Sprites.AXE_GOLD
@@ -248,5 +277,6 @@ class GoldenAxe(BaseAxe):
     POWER = 4
 
 
+@register_json
 class Bow(UsableItem):
     pass

@@ -3,7 +3,7 @@ from random import randint
 from typing import List
 
 import pygame
-from assets import FONT_PATH, Sprites
+from assets import SPRITE_SIZE, Sprites, FONT_30 as FONT
 from entities.building import Building
 from entities.item import ItemEntity
 from entities.ui import ActionsPanel, Popup
@@ -14,7 +14,6 @@ from items.item import Item
 from pygame_entities.entities.entity import Entity
 from pygame_entities.utils.math import Vector2
 
-FONT = pygame.font.Font(FONT_PATH, 30)
 BUILDINGS_ITEMS_PICKUP_RADIUS = 128
 
 WORKBENCH_RECIPES = [
@@ -173,6 +172,7 @@ class BasicWorkbench(Workbench):
     NAME = 'Crafting Log'
     ITEMS_PICKUP_RADIUS = BUILDINGS_ITEMS_PICKUP_RADIUS
     HP = 1
+    COLLISION_BOX = Vector2.from_tuple(SPRITE_SIZE) / 1.5
     RECIPES = [
         Recipe('Workbench', {Wood: 3}, {Workbench.get_item_class(): 1})
     ]
@@ -207,6 +207,8 @@ class Tree(Building):
     IS_USABLE = False
 
     MIN_AXE_POWER = 1
+
+    COLLISION_BOX = Vector2.from_tuple(SPRITE_SIZE) / 2
 
     # Включаем урон только от кирки
     def add_hp(self, hp: int, initiator: Entity):

@@ -158,6 +158,4 @@ class Sprites:
 
 
 FONT_PATH = "assets/fonts/font.ttf"
-
-# а так низя) ибо надо сначала пигейм инициализировать, да и так-то у нас много размеров шрифтов будет, поэтому не надо это тут
-# FONT_16 = pygame.font.Font(FONT_PATH, 16)  # Дефолтный шрифт в проекте
+FONT_30 = pygame.font.Font(FONT_PATH, 30)

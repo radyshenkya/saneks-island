@@ -1,5 +1,6 @@
 from random import choice, randint
 from entities.buildings import Stone, StoneWithCoal, StoneWithGold, StoneWithIron, Tree, WoodenCrate
+from entities.building import snap_position_to_grid
 from entities.item import ItemEntity
 from entities.map import Map, SandTile, fill_map
 from entities.player import Player
@@ -55,14 +56,14 @@ class MainScene(BaseScene):
                 MIN_STONES_IN_CLUSTERS, MAX_STONES_IN_CLUSTERS)
 
             for i in range(stones_in_cluster):
-                stone(cluster_pos + Vector2.from_tuple(
+                stone(snap_position_to_grid(cluster_pos + Vector2.from_tuple(
                     (
                         randint(0,
                                 MAX_STONE_SPAWN_OFFSET),
                         randint(0,
                                 MAX_STONE_SPAWN_OFFSET)
                     )
-                )
+                ))
                 )
 
     @classmethod
@@ -78,7 +79,7 @@ class MainScene(BaseScene):
                 randint(100, pos_constraint[1])
             )
 
-            building_class(pos)
+            building_class(snap_position_to_grid(pos))
 
     @classmethod
     def spawn_items(cls, game: Game):

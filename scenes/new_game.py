@@ -30,8 +30,10 @@ class NewGameScene(BaseScene):
                     int(map_size.text), int(map_size.text))
                 assert game_name.text != ''
 
-                GameGenerationScene.SAVE_NAME = game_name.text
-                game.set_scene(GameGenerationScene)
+                MainScene.SAVE_NAME = game_name.text
+                MainScene.NEEDS_TO_BE_GENERATED = True
+                MainScene.NEEDS_TO_BE_LOADED = False
+                game.set_scene(MainScene)
             except:
                 Popup(Vector2.from_tuple(pygame.mouse.get_pos()),
                       "Something went wrong...", FONT_30)
@@ -39,6 +41,8 @@ class NewGameScene(BaseScene):
         def start_game_from_file(file_name):
             try:
                 MainScene.FILE_TO_LOAD = file_name
+                MainScene.NEEDS_TO_BE_GENERATED = False
+                MainScene.NEEDS_TO_BE_LOADED = True
                 game.set_scene(MainScene)
             except Exception as e:
                 print(e)

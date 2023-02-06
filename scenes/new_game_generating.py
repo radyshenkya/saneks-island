@@ -11,7 +11,6 @@ from items.items import Rock, Wood, WoodenAxe
 from pygame_entities.game import Game
 from pygame_entities.scenes import BaseScene
 from pygame_entities.utils.math import Vector2
-from scenes.main import MainScene
 
 SAVES_FOLDER = './saves'
 
@@ -122,8 +121,10 @@ class GameGenerationScene(BaseScene):
     @classmethod
     def on_load(cls, game: Game):
         cls.MAP = Map(Vector2(), cls.CHUNK_SIZE, cls.MAP_SIZE, SandTile)
+        fill_map(cls.MAP, 0)
 
         player = Player(cls.MAP.get_map_size() / 2)
+        game.camera_follow_entity(player)
         ItemEntity(player.position, WoodenAxe(1))
         ItemEntity(player.position, WoodenCrate.get_item_class()(5))
         cls.spawn_buildings(game)
@@ -133,9 +134,6 @@ class GameGenerationScene(BaseScene):
         with open(f'{SAVES_FOLDER}/{cls.SAVE_NAME}', 'w', encoding='utf-8') as f:
             f.write(saved_json)
             f.flush()
-
-        MainScene.FILE_TO_LOAD = f'{SAVES_FOLDER}/{cls.SAVE_NAME}'
-        game.set_scene(MainScene)
 
     @classmethod
     def on_end(cls, game: Game):

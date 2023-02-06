@@ -4,6 +4,7 @@ from entities.player import Player
 from pygame_entities.game import Game
 from pygame_entities.scenes import BaseScene
 from entities.json_parser import registered_classes
+from scenes.new_game_generating import GameGenerationScene
 
 
 class MainScene(BaseScene):
@@ -11,6 +12,7 @@ class MainScene(BaseScene):
 
     FILE_TO_LOAD = "./saves/unknown_game"
     NEEDS_TO_BE_LOADED = True
+    NEEDS_TO_BE_GENERATED = False
 
     @classmethod
     def dump_to_json(cls, game: Game) -> str:
@@ -26,7 +28,6 @@ class MainScene(BaseScene):
 
     @classmethod
     def on_load(cls, game: Game):
-
         if cls.NEEDS_TO_BE_LOADED:
             json_dict = None
 
@@ -38,6 +39,10 @@ class MainScene(BaseScene):
 
                 if isinstance(ent, Player):
                     game.camera_follow_entity(ent)
+
+        if cls.NEEDS_TO_BE_GENERATED:
+            GameGenerationScene.SAVE_NAME = cls.FILE_TO_LOAD
+            GameGenerationScene.on_load(game)
 
     @classmethod
     def on_end(cls, game: Game):

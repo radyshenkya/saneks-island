@@ -160,3 +160,4 @@ class Sprites:
 
 FONT_PATH = "assets/fonts/font.ttf"
 FONT_30 = pygame.font.Font(FONT_PATH, 30)
+FONT_50 = pygame.font.Font(FONT_PATH, 50)

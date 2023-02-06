@@ -131,7 +131,7 @@ class GameGenerationScene(BaseScene):
 
         saved_json = cls.dump_to_json(game)
 
-        with open(f'{SAVES_FOLDER}/{cls.SAVE_NAME}', 'w', encoding='utf-8') as f:
+        with open(f'{cls.SAVE_NAME}', 'w', encoding='utf-8') as f:
             f.write(saved_json)
             f.flush()
 

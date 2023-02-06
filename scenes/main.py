@@ -1,9 +1,12 @@
 from json import loads, dumps
+from assets import FONT_30
 from entities.json_parser import json_dict_into_object
 from entities.player import Player
+from entities.ui import Button
 from pygame_entities.game import Game
 from pygame_entities.scenes import BaseScene
 from entities.json_parser import registered_classes
+from pygame_entities.utils.math import Vector2
 from scenes.new_game_generating import GameGenerationScene
 
 
@@ -13,6 +16,7 @@ class MainScene(BaseScene):
     FILE_TO_LOAD = "./saves/unknown_game"
     NEEDS_TO_BE_LOADED = True
     NEEDS_TO_BE_GENERATED = False
+    QUIT_TO_SCENE = None
 
     @classmethod
     def dump_to_json(cls, game: Game) -> str:
@@ -28,17 +32,30 @@ class MainScene(BaseScene):
 
     @classmethod
     def on_load(cls, game: Game):
+        def quit_to_main_menu():
+            game.set_scene(cls.QUIT_TO_SCENE)
+
+        Button(Vector2.from_tuple(game.screen_resolution) - Vector2(200, game.screen_resolution[1]),
+               "Quit To Menu",
+               FONT_30,
+               quit_to_main_menu,
+               color=(255, 200, 255))
+
         if cls.NEEDS_TO_BE_LOADED:
-            json_dict = None
+            try:
+                json_dict = None
 
-            with open(cls.FILE_TO_LOAD, 'r') as f:
-                json_dict = loads(f.read())
+                with open(cls.FILE_TO_LOAD, 'r') as f:
+                    json_dict = loads(f.read())
 
-            for ent_dict in json_dict['entities']:
-                ent = json_dict_into_object(ent_dict)
+                for ent_dict in json_dict['entities']:
+                    ent = json_dict_into_object(ent_dict)
 
-                if isinstance(ent, Player):
-                    game.camera_follow_entity(ent)
+                    if isinstance(ent, Player):
+                        game.camera_follow_entity(ent)
+            except:
+                quit_to_main_menu()
+                return
 
         if cls.NEEDS_TO_BE_GENERATED:
             GameGenerationScene.SAVE_NAME = cls.FILE_TO_LOAD

@@ -133,7 +133,7 @@ class Player(LivingEntity, OnMapSpriteMixin, BlockingCollisionMixin, VelocityMix
 
         if not isinstance(selected_item, UsableItem):
             return
-        print(self.position)
+
         selected_item.use(initiator=self)
 
         if selected_item.amount <= 0:
